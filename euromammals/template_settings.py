@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "events",
     "publications",
     "website",
+    "pagers",
 ]
 
 MIDDLEWARE = [
