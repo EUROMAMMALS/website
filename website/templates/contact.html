@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<section class="pt-5 pb-5" id="contact">
+    <div class="container">
+        <form method="POST" action="." id="insertform">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            <div class="row" id="accordion">
+                {% for field in form %}
+                <div class="col-12 p-4">
+                    {% if field.help_text %}
+                    <p class="help small">{{ field.help_text }}</p>
+                    {% else %}
+                    <p class="help small">{{ field.name}}</p>
+                    {% endif %}
+                    {{ field.errors }}
+                    {% blocktrans %}{{ field }}{% endblocktrans %} 
+                </div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary mr-3">{% trans "Send request" %}</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

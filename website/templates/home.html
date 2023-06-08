@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load filters %}
+
+{% block title %}{% blocktranslate %}EUROMAMMALS home page{% endblocktranslate %}{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css">
+{% endblock %}
+{% block content %}
+<!-- sub-project section -->
+<section class="pt-6 pb-7" id="projects">
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-md-10 mx-auto">
+                <div class="row text-muted">
+                    <div class="col-md box p-2">
+                        <p>
+                            <b>EUROMAMMALS</b> is an umbrella project coordinating species-specific movement databases for several species and 1 group including different taxa.<br>
+                            The approach of the <b>EUROMAMMALS</b> projects for data and knowledge sharing has proven to be effective in creating a strong network of researchers and ultimately to produce science not possible at the single study area level.
+                            The experience and success of the pioneer project EURODEER inspired the scientific community studying movement ecology of different species to experiment the same method.
+                        </p>
+                        <p>
+                            The <b>EUROMAMMALS</b> databases are connected, facilitating inter-species studies. <b>EUROMAMMALS</b> has been established to coordinate each species-specific database as much as possible.
+                        </p>
+                        <p>
+                            The <b>EURODEER</b> project had origin when 2 groups (<em>Research and Innovation Centre, Fondazione Edmund Mach, Italy</em> and <em>Laboratoire de Biométrie et Biologie évolutive, Univ. C. Bernard Lyon 1, France</em>) started to discuss common problems in GPS data management, while envisioning the advantages of data sharing on a common and efficient platform.
+                            The experience gained at Edmund Mach Foundation through the project ISAMUD as considered the technical basis for the development of a new common software platform.
+                            Several other research groups soon indicated interest in joining the discussion on the opportunity of a common European roe deer data repository, and a common meeting in 2009 held at the Edmund Mach Foundation in Italy was the benchmark of such an innovative database.
+                        </p>
+                        <p class="text-center">
+                            <b>Other communities are truly welcome to join!</b>
+                        </p>
+                    </div>
+                </div>
+                <div class="row feature-boxes">
+                    <div class="col-md-6 box text-center p-4">
+                        <img width=90% src="{% static 'img/roedeer2.webp' %}" class="p-2">
+                        <img src="{% static 'img/logos/eurodeer_logo.png' %}" class="p-2" width="95%">
+                        <p class="text-muted">
+                            The European roe deer (Capreolus capreolus) is a widespread species in Europe.
+                            The EURODEER project started in 2008 and has set the stage for all others EUROMAMMALS projects.
+                            The collaborative work gave origin to a wide scientific production and more questions are being addressed!
+                        </p>
+                        <a href="/eurodeer" class="btn">{% trans "More info..." %}</a>
+                    </div>
+                    <div class="col-md-6 text-center p-4">
+                        <img width=90% src="{% static 'img/reddeer.webp' %}" class="p-2">
+                        <img src="{% static 'img/logos/eureddeer_logo.png' %}" class="p-2" width="95%">
+                        <p class="text-muted">
+                            The red deer (Cervus elaphus) is a large, iconic deer species, common in Europe.
+                            EUREDDEER shares the network with the EURODEER project, but it relies on a species-specific shared database.
+                        </p>
+                        <a href="/eureddeer" class="btn">{% trans "More info..." %}</a>
+                    </div>
+                    <div class="col-md-6 text-center p-4">
+                        <img width=90% src="{% static 'img/wildboar.webp' %}" class="p-2">
+                        <img src="{% static 'img/logos/euroboar_logo.png' %}" class="p-2" width="95%">
+                        <p class="text-muted">
+                            The wild boar (Sus scrofa), is a suid native to much of Eurasia and one of the widest-ranging mammals.
+                            The EUROBOAR project started in 2015 and the network has been expanding rapidly to address important scientific and management questions.
+                        </p>
+                        <a href="/euroboar" class="btn">{% trans "More info..." %}</a>
+                    </div>
+                    <div class="col-md-6 text-center p-4">
+                        <img width=90% src="{% static 'img/lynx1.webp' %}" class="p-2">
+                        <img src="{% static 'img/logos/eurolynx_logo.png' %}" class="p-2" width="95%">
+                        <p class="text-muted">
+                            The Eurasian lynx (Lynx lynx) is a medium-sized wild cat occurring from Northern, Central and Eastern Europe to Central Asia and Siberia, the Tibetan Plateau and the Himalayas.
+                            The EUROLYNX project started in 2018 and has rapidly built a large and dedicated community to address urgent scientific and conservation questions regarding this iconic species.
+                        </p>
+                        <a href="/eurolynx" class="btn">{% trans "More info..." %}</a>
+                    </div>
+                    <div class="col-md-6 text-center p-4">
+                        <img width=90% src="{% static 'img/wildcat.webp' %}" class="p-2">
+                        <img src="{% static 'img/logos/eurowildcat_logo.png' %}" class="p-2" width="95%">
+                        <p class="text-muted">
+                            The European wildcat (Felis silvestris) is a small wild cat native to Europe and the Caucasus.
+                            The EUROWILDCAT project started in 2018 and has been steadily growing into a very wide an virbrant community with expertise and knolwedge on this secretive species of high conservation concern.
+                        </p>
+                        <a href="/eurowildcat" class="btn">{% trans "More info..." %}</a>
+                    </div>
+                    <div class="col-md-6 text-center p-4">
+                        <img width=90% src="{% static 'img/smallanimal.webp' %}" class="p-2">
+                        <img src="{% static 'img/logos/eurosmallmammals_logo.png' %}" class="p-2" width="95%">
+                        <p class="text-muted">
+                            EUROSMALLMAMMALS does not focus only on one species but it covers diverse taxonomic groups the ensemble of which is referred to as 'small mammals'.
+                            The term small mammal includes terrestrial mammals with body mass < 5 kg.
+                        </p>
+                        <a href="/eurosmallmammals" class="btn">{% trans "More info..." %}</a>
+                    </div>
+                    <div class="col-md-6 text-center p-4">
+                        <img width=90% src="{% static 'img/ibex.webp' %}" class="p-2">
+                        <img src="{% static 'img/logos/euroibex_logo.png' %}" class="p-2">
+                        <p class="text-muted">
+                            EUROIBEX is an open, bottom-up scientific network to promote collaborative science, based on knowledge and data sharing, with the aim to investigate the movement and spatial ecology of the Capra Ibex, one of the most iconic species of the Alpine range
+                        </p>
+                        <a href="/euroibex" class="btn">{% trans "More info..." %}</a>
+                    </div>
+                    <div class="col-md-6 text-center p-4">
+                        <img width=90% src="{% static 'img/afrimove1.webp' %}" class="p-2">
+                        <h4>AFRIMOVE</h4>
+                        <p class="text-muted">
+                            AFRIMOVE is an independent project federated with the European species-specific scientific network.
+                            It is based on a geographic area (mainly southern Africa) instead of a single species.
+                            It started in 2018 and the databse and network are already well established.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!--maps section-->
+<section class="p-5 section-angle top-right bottom-right" id="mapsection">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mx-auto text-center">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--chart section-->
+<section class="p-5 section-angle top-right bottom-right" id="chartsection">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mx-auto text-center">
+                <div id="chart"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!--sponsor section-->
+<section class="p-5 section-angle top-right bottom-right" id="sponsor">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mx-auto text-center">
+                <p class="lead text-muted">
+                    Since 2012, Vectronic Aerospace GmbH is the official sponsor of EURODEER project.
+                    In 2018, it has started to support the entire EUROMAMMALS initiative, showing to strongly believe in collaborative science and in the scientific potentiality of animal-borne information, such that provided by their products.
+                </p>
+                <a href="https://www.vectronic-aerospace.com/" target="_blank"><img src="{% static 'img/vectronic.webp' %}"></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--contacts section-->
+<hr>
+<section class="p-5 section-angle top-right bottom-right" id="contacts_button">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mx-auto text-center">
+                <a href="/contact/" class="btn btn-primary"><h2>Contact us</h2></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if events|length > 0 %}
+<!--events section-->
+<section class="p-5 section-angle top-right bottom-right" id="contacts_button">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mx-auto text-center">
+                <h2>Next events</h2>
+                <p class="text-muted lead">Next events with EUROMAMMALS members participation</p>
+            </div>
+        </div>
+        <div class="row">
+            {% for event in events %}
+            <div class="col-md-6 mx-auto text-center">
+                {{ event }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!--pubs section-->
+{% if pubs|length > 0 %}
+<section class="p-5 section-angle top-right bottom-right" id="contacts_button">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mx-auto text-center">
+                <h2>Latest publications</h2>
+                <p class="text-muted lead">Our latest publicated article</p>
+            </div>
+        </div>
+        <div class="row">
+            {% for pub in pubs %}
+            <div class="col-md-6 mx-auto text-center p-2">
+                <em>{{ pub.authors }}</em> <b>{{ pub.title }}</b> {{ pub.year }}, {{ pub.journal }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!--faq section-->
+<section class="p-5" id="faq">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mx-auto text-center">
+                <h2>Frequently asked questions</h2>
+                <p class="text-muted lead">Answers to most common questions.</p>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col-md-10 mx-auto">
+                <div class="row">
+                    <div class="col-md-6 mb-5">
+                        <h6>Can I join EUROMAMMALS network??</h6>
+                        <p class="text-muted">
+                            EUROMAMMALS is an open project and anyone is welcome to join.
+                            If you study mammal species and have collected movement or other kind of data to share with us, or are simply interested in the project, please get in contact.
+                        </p>
+                    </div>
+                    <div class="col-md-6 mb-5">
+                        <h6>Can I use EUROMAMMALS data?</h6>
+                        <p class="text-muted">
+                            According to EUROMAMMALS terms of use, data can be accessed only by those who contribute with data of some kind.
+                            The use of data is always bounded to preliminary agreement with data owners, on a project-by-project basis.
+                        </p>
+                    </div>
+                    <div class="col-md-6 mb-5">
+                        <h6>What data are stored in the EUROMAMMALS database?</h6>
+                        <p class="text-muted">
+                            The main focus of the database is tracking data (i.e. GPS, VHF, activity) of the mammal species studied by the networks, but a wide range of other information on population, study areas, hunting regimes, capture, mortality, etc is available and standardized among different research groups. Moreover, the database integrates many environmental dataset like smoothed MODIS NDVI, CORINE land cover maps, meteo data, DEM, with the perspective to move towards on-the-fly algorithms to perform the spatio-temporal join between animal-borne and environmental data.
+                        </p>
+                    </div>
+                    <div class="col-md-6 mb-5">
+                        <h6>Who does financially support EUROMAMMALS?</h6>
+                        <p class="text-muted">
+                            EUROMAMMALS financial resources come from the voluntary contributions of each partner.
+                            On top of this, in the last years Vectronic Aerospace GmbH has generously sponsored many of the EUROMAMMALS activities.
+                            EUROMAMMALS is currently applying for granting opportunities and collaborations in this sense are very welcome.
+                        </p>
+                    </div>
+                    <div class="col-md-6 mb-5">
+                        <h6>If my Institute wants to join, do we have to pay?</h6>
+                        <p class="text-muted">
+                            No, you don't have to. Participation is free and the goal is to create bottom-up networks focussed on collaborative science.
+                            That said, in addition to the scientific coordinators, a team of database developers and data curators work part time on the project to update the platform, run data quality check and support groups for specific analysis.
+                            They are supported financially by the sponsor and the voluntary contributions from partners, so everyone is encouraged to contribute according to their financial possibilities.
+                        </p>
+                    </div>
+                    <div class="col-md-6 mb-5">
+                        <h6>When the new website will be ready?</h6>
+                        <p class="text-muted">As soon as possible, we suppose in a couple of months.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_script %}
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
+    <script>
+        var wms = new ol.layer.Tile({
+            source: new ol.source.TileWMS({
+                url: 'http://eurodeer2.fmach.it/production/euromammals_ows',
+                params: {'LAYERS': 'eurodeer_research_groups'},
+                attributions: ['EUROMAMMALS project'],
+            })
+        })
+        var map = new ol.Map({
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }),
+                wms
+            ],
+            target: 'map',
+            view: new ol.View({
+                center: ol.proj.transform([8, 50], 'EPSG:4326', 'EPSG:3857'),
+                zoom: 4
+            })
+        });
+
+    </script>
+{% endblock %}

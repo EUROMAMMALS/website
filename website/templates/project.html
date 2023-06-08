@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load filters %}
+
+{% block title %}{% blocktranslate %}EUROMAMMALS home page{% endblocktranslate %}{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css">
+{% endblock %}
+{% block header %}
+        <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Image 1"></button>
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Image 2"></button>
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Image 3"></button>
+            </div>
+            <div class="carousel-inner">
+                {% with 'img/animals/'|add:proj|add:'_1.jpg' as image_static %}
+                <div class="carousel-item active" style="background-image: url('{% static image_static %}')">
+                {% endwith %}
+                    <div class="carousel-caption">
+                    <h5>{{ proj|upper }}</h5>
+                    <p>{{ data.title }}</p>
+                    </div>
+                </div>
+                {% with 'img/animals/'|add:proj|add:'_2.jpg' as image_static %}
+                <div class="carousel-item" style="background-image: url('{% static image_static %}')">
+                {% endwith %}
+                    <div class="carousel-caption">
+                    <h5>{{ proj|upper }}</h5>
+                    <p>{{ data.title }}</p>
+                    </div>
+                </div>
+                {% with 'img/animals/'|add:proj|add:'_3.jpg' as image_static %}
+                <div class="carousel-item" style="background-image: url('{% static image_static %}')">
+                {% endwith %}
+                    <div class="carousel-caption">
+                    <h5>{{ proj|upper }}</h5>
+                    <p>{{ data.title }}</p>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+{% endblock %}
+{% block content %}
+<!-- sub-project section -->
+<section class="pt-6 pb-7" id="section-descr">
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-md-10 mx-auto">
+                <div class="row text-muted">
+                    {{ data.descr|safe|linebreaks }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!--maps section-->
+<section class="p-5 section-angle top-right bottom-right" id="section-map">
+    <div class="container">
+        <div class="row p-2">
+            <div class="col-6 mx-auto text-center">
+                <button class="btn btn-primary">Research groups</button>
+            </div>
+            <div class="col-6 mx-auto text-center">
+                <button class="btn btn-primary">Study areas</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 mx-auto text-center">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--chart section-->
+<section class="p-5 section-angle top-right bottom-right" id="section-chart">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mx-auto text-center">
+                <div id="chart"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--events section-->
+{% if events|length > 0 %}
+<hr>
+<section class="p-5 section-angle top-right bottom-right" id="section-event">
+    <div class="container text-center">
+        <h2>Events</h2>
+        {% if "events" in data.keys %}
+        <div class="row">
+            <div class="col-md-10 mx-auto">
+                <div class="row text-muted">
+                    {{ data.events|safe|linebreaks }}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col-md-10 mx-auto">
+                <div class="row text-muted">
+                    <p class="text-muted lead">All events related to {{ proj|upper }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="row pt-5">
+            {% for event in events %}
+            <div class="col-md-6 mx-auto">
+                {{ event|safe|linebreaks }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% else %}
+
+{% if "events" in data.keys %}
+<section class="p-5 section-angle top-right bottom-right" id="section-event">
+    <div class="container text-center">
+        <h2>Events</h2>
+        <div class="row">
+            <div class="col-md-10 mx-auto">
+                <div class="row text-muted">
+                    {{ data.events|safe|linebreaks }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endif %}
+
+{% if pubs|length > 0 %}
+<hr>
+<!--pubs section-->
+<section class="p-5 section-angle top-right bottom-right" id="section-pub">
+    <div class="container text-center">
+        <h2>Publications</h2>
+        {% if "pubs" in data.keys %}
+        <div class="row">
+            <div class="col-md-10 mx-auto">
+                <div class="row text-muted">
+                    {{ data.pubs|safe|linebreaks }}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="row text-muted">
+                    <p class="text-muted lead">All publicated articles related to {{ proj|upper }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="row pt-5">
+            {% for pub in pubs %}
+            <div class="col-md-4 mx-auto">
+                <em>{{ pub.author }}</em> <b>{{ pub.title }}</b> {{ pub.year }} {{ pub.journal }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% else %}
+{% if "pubs" in data.keys %}
+<section class="p-5 section-angle top-right bottom-right" id="section-pub">
+    <div class="container text-center">
+        <h2>Publications</h2>
+        <div class="row">
+            <div class="col-md-10 mx-auto">
+                <div class="row text-muted">
+                    {{ data.pubs|safe|linebreaks }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endif %}
+
+{% if "thesis" in data.keys %}
+<section class="p-5 section-angle top-right bottom-right">
+    <div class="container text-center">
+        <h4>Related PHD thesis</h4>
+        <div class="row">
+            <div class="col-md-10 mx-auto">
+                <div class="row text-muted">
+                    {{ data.thesis.descr|safe|linebreaks }}
+                </div>
+                <div class="text-left">
+                    <ul class="nobull">
+                        {% for thes in data.thesis.studs %}
+                        <li>{{thes}}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!--contacts section-->
+<hr>
+<section class="p-5 section-angle top-right bottom-right" id="section-contact">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mx-auto text-center">
+                <a href="/contact/" class="btn btn-primary"><h2>Contact us</h2></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--sponsor section-->
+<section class="p-5 section-angle top-right bottom-right" id="sponsor">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mx-auto text-center">
+                <p class="lead text-muted">
+                    Since 2012, Vectronic Aerospace GmbH is the official sponsor of EURODEER project.
+                    In 2018, it has started to support the entire EUROMAMMALS initiative, showing to strongly believe in collaborative science and in the scientific potentiality of animal-borne information, such that provided by their products.
+                </p>
+                <a href="https://www.vectronic-aerospace.com/" target="_blank"><img src="{% static 'img/vectronic.webp' %}"></a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_script %}
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
+    <script>
+        var wms_group = new ol.layer.Tile({
+            source: new ol.source.TileWMS({
+                url: 'http://eurodeer2.fmach.it/production/euromammals_ows',
+                params: {'LAYERS': '{{ proj|lower }}_research_groups'},
+                attributions: ['EUROMAMMALS project'],
+            })
+        })
+        var wms_area = new ol.layer.Tile({
+            source: new ol.source.TileWMS({
+                url: 'http://eurodeer2.fmach.it/production/euromammals_ows',
+                params: {'LAYERS': '{{ proj|lower }}_study_areas'},
+                attributions: ['EUROMAMMALS project'],
+            })
+        })
+        var map = new ol.Map({
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }),
+                wms_group,
+                wms_area,
+            ],
+            target: 'map',
+            view: new ol.View({
+                center: ol.proj.transform([8, 50], 'EPSG:4326', 'EPSG:3857'),
+                zoom: 4
+            })
+        });
+
+    </script>
+{% endblock %}
