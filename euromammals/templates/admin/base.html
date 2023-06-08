@@ -1,0 +1,33 @@
+{% extends 'admin/base.html' %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+:root {
+  --primary: #008000;
+  --secondary: #008000;
+  --primary-fg: #fff;
+  --link-fg: #808080;
+  --link-hover-color: #bbbaba;
+  --link-selected-fg: #999999;
+  --accent: var(--link-selected-fg);
+
+  --header-color: #ffc;
+  --header-branding-color: var(--accent);
+  --header-bg: var(--secondary);
+  --header-link-color: var(--primary-fg);
+
+  --default-button-hover-bg: #194e00;
+}
+
+#user-tools a:focus, #user-tools a:hover {
+    text-decoration: none;
+    border-bottom-color: var(--link-hover-color);
+    color: var(--link-hover-color);
+}
+
+.downlink, .inlinedownlink {
+  padding-left: 16px;
+  background: url(../img/icon-changelink.svg) 0 1px no-repeat;
+}
+</style>
+{% endblock %}

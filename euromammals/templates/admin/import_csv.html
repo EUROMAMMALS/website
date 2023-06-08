@@ -1,0 +1,7 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools-items %}
+    {{ block.super }}
+    <li><a class="downlink" href="download-csv/">Download CSV</a></li>
+    <li><a class="addlink" href="import-csv/">Import CSV</a></li>
+{% endblock %}

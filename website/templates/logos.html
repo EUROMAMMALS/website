@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+{% for logo in logos %}
+
+    <p class="p-4">
+        <img src="{% static logo %}" />
+    </p>
+
+{% endfor %}
+{% endblock %}

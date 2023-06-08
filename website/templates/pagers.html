@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+{% for item in items %}
+    <div class="card">
+        <div class="card-heading">
+            <h4 class="card-title">
+                <a class="btn" data-bs-toggle="collapse" href="#collapseMammals{{item.id}}" role="button" aria-expanded="false" aria-controls="collapseMammals{{ item.id }}">
+                    <span class="float-left"><b>{{ item.title }}</b> <small>({{ item.site }})</small></span>
+                    <span class="float-right"><i class="fas fa-plus fa-3" id="faicon{{item.id}}"></i></span>
+                </a>
+                {% if request.user.is_staff %}
+                <span class="text-end"><a href="/mammalsadmin/pagers/pager/{{ item.id }}" target="_blank"><small>{% translate "Modify pager" %}</small></a></span>
+                {% endif %}
+            </h4>
+        </div>
+        <div id="collapseMammals{{ item.id }}" class="collapse" data-id="{{ item.id }}">
+            <div class="card-body" id="mammals{{ item.id }}">
+                <a href="{{item.link}}" target="_blank">{{item.link}}</a>
+                {% if item.external_participant_link %}
+                <br>
+                <a href="{{item.external_participant_link}}" target="_blank">{{item.external_participant_link}}</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+{% endfor %}
+{% endblock %}
