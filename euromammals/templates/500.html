@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% blocktrans %}Page unavailable{% endblocktrans %}{% endblock %}
+
+{% block content %}
+<h1>{% blocktrans %}Page unavailable{% endblocktrans %}</h1>
+
+<p>{% blocktrans %}Sorry, but the requested page is unavailable due to a server problem.{% endblocktrans %}</p>
+
+<p>{% blocktrans %}Please contact our engineers with more info possible{% endblocktrans %}.</p>
+{% endblock %}

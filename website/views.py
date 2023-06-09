@@ -1,6 +1,5 @@
 import os
 import json
-import glob
 from datetime import date
 from itertools import chain
 
@@ -30,10 +29,19 @@ def contact_view(request):
         form = ContactForm(request.POST)
         if form.is_valid():
             #form.save()
-            email_subject = {form.cleaned_data["subject"]}
+            tolist = ["euromammals@fmach.it"]
+            for idstr in form.cleaned_data["project"]:
+                try:
+                    proj = Project.objects.get(id=int(idstr))
+                    tolist.append(f"{proj.name.lower()}.datacurator@fmach.it")
+                except Project.DoesNotExist:
+                    pass
+            email_subject = form.cleaned_data["subject"]
             email_message = f"FROM: {form.cleaned_data['contact_name']}\nEMAIL: {form.cleaned_data['from_email']}\nMESSAGE: {form.cleaned_data['message']}"
-            send_mail(email_subject, email_message, settings.CONTACT_EMAIL, settings.ADMIN_EMAIL)
-            return render(request, 'email_sent.html')
+            if send_mail(email_subject, email_message, settings.EMAIL_HOST_USER, tolist):
+                return render(request, 'email_sent.html')
+            else:
+                return render(request, "500.html")
     form = ContactForm()
     context = {'form': form}
     return render(request, 'contact.html', context)

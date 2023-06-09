@@ -7,7 +7,8 @@ class ContactForm(forms.Form):
         super(ContactForm, self).__init__(*args, **kwargs)
         projects = [(None, "----")]
         for proj in Project.objects.all():
-            projects.append((proj.id, proj.name))
+            if proj.name != "EXTERNAL":
+                projects.append((proj.id, proj.name))
         self.fields['project'].choices = projects
 
     contact_name = forms.CharField(
@@ -22,9 +23,9 @@ class ContactForm(forms.Form):
         required=True,
         help_text=_("Subject")
     )
-    project = forms.ChoiceField(
+    project = forms.MultipleChoiceField(
         choices=(),
-        help_text=_("If you are interested in a specific project please select the one")
+        help_text=_("If you are interested in a specific project please select the one"),
     )
     message = forms.CharField(
         widget=forms.Textarea,
