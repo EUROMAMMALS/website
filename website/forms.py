@@ -3,9 +3,13 @@ from django.utils.translation import gettext_lazy as _
 from core.models import Project
 
 class ContactForm(forms.Form):
-    projects = [(None, "----")]
-    for proj in Project.objects.all():
-        projects.append((proj.id, proj.name))
+    def __init__(self, *args, **kwargs):
+        super(ContactForm, self).__init__(*args, **kwargs)
+        projects = [(None, "----")]
+        for proj in Project.objects.all():
+            projects.append((proj.id, proj.name))
+        self.fields['project'].choices = projects
+
     contact_name = forms.CharField(
         required=True,
         help_text=_("Your name and surname")
@@ -19,7 +23,7 @@ class ContactForm(forms.Form):
         help_text=_("Subject")
     )
     project = forms.ChoiceField(
-        choices=projects,
+        choices=(),
         help_text=_("If you are interested in a specific project please select the one")
     )
     message = forms.CharField(

@@ -35,7 +35,7 @@ class Project(models.Model):
 
     class Meta:
         ordering = ["name"]
-        db_table = "projects"
+        db_table = "project"
 
     def __unicode__(self):
         return smart_str(self.name)
