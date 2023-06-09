@@ -35,6 +35,7 @@ class Publication(models.Model):
     url = models.URLField(null=True, blank=True)
     doi = models.CharField(max_length=255)
     project = models.ManyToManyField(Project)
+    euro_id = models.IntegerField()
 
     class Meta:
         db_table = 'publication'
