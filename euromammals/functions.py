@@ -389,7 +389,14 @@ class geo_mapping:
         fname = tmpf.name
         tmpf.close()
         print(url, fname)
-        with urllib.request.urlopen(url) as resp, open(fname, "wb") as ouf:
+        req = urllib.request.Request(
+            url,
+            data=None,
+            headers={
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
+            }
+        )
+        with urllib.request.urlopen(req) as resp, open(fname, "wb") as ouf:
             data = resp.read()  # a `bytes` object
             ouf.write(data)
             ouf.close()
