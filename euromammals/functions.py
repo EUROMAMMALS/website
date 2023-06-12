@@ -94,6 +94,8 @@ def get_decimal_value(field):
 
 def get_datetime(field):
     """Function to return datetime value"""
+    if field == "":
+        return None
     try:
         dateobj = datetime.strptime(field, "%Y-%m-%d %H:%M")
     except ValueError:
