@@ -5,6 +5,8 @@ from core.models import Project
 
 class Pager(models.Model):
     title = models.CharField(max_length=255)
+    date = models.DateField(null=True, blank=True)
+    version = models.IntegerField(null=True, blank=True)
     link = models.URLField()
     external_participant_link = models.URLField(null=True, blank=True)
     active = models.BooleanField(null=True, blank=True)
