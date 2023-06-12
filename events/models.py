@@ -47,7 +47,7 @@ class Event(models.Model):
             outstr += f", {self.venue}"
         outstr += f", {self.start.date()}"
         if self.end:
-            outstr += f" - {self.end.date()}"
+            outstr += f" / {self.end.date()}"
         return smart_str(outstr)
 
     def __str__(self):

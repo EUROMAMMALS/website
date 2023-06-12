@@ -7,7 +7,7 @@ from core.models import Project
 # Create your models here.
 class Journal(models.Model):
     """"""
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     url = models.URLField(null=True, blank=True)
 
     class Meta:

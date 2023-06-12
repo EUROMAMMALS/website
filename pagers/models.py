@@ -8,7 +8,7 @@ class Pager(models.Model):
     link = models.URLField()
     external_participant_link = models.URLField(null=True, blank=True)
     active = models.BooleanField(null=True, blank=True)
-    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    project = models.ManyToManyField(Project)
 
     class Meta:
         db_table = 'pager'
