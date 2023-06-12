@@ -32,7 +32,7 @@ class Event(models.Model):
     image_link = models.URLField(null=True, blank=True)
     registration_link = models.URLField(null=True, blank=True)
     registration_until = models.DateTimeField(null=True, blank=True)
-    managers = models.ManyToManyField(User, )
+    managers = models.ManyToManyField(User, null=True, blank=True)
     program_link = models.URLField(null=True, blank=True)
     # TODO think if it could be useful
     # logistic_link = models.URLField(null=True, blank=True)
