@@ -6,6 +6,7 @@ from itertools import chain
 from django.shortcuts import render
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db.models import Q
 
 from core.models import Project
 from events.models import Event
@@ -18,7 +19,7 @@ from .forms import ContactForm
 def homepage(request):
     """Function to return the home page"""
     today = date.today()
-    myevents = Event.objects.filter(start__gt=today)[:6]
+    myevents = Event.objects.filter(start__gt=today).filter(~Q(as_participant=True))[:6]
     pubs = Publication.objects.all()[:6]
     return render(request, template_name="home.html", context={"events": myevents, "pubs": pubs})
 
@@ -63,7 +64,7 @@ def logos(request):
 
 def events(request):
     """Function to return the events"""
-    myevents = Event.objects.all()
+    myevents = Event.objects.filter(~Q(as_participant=True))
     return render(request, template_name="events.html", context={"events": myevents})
 
 
@@ -85,7 +86,8 @@ def project(request, projct):
     data = json.load(jsonfile)
     proj = Project.objects.get(name=projct)
     pubs = Publication.objects.filter(project=proj)
-    events = Event.objects.filter(project=proj)
+    events = Event.objects.filter(project=proj).filter(~Q(as_participant=True))
+    participants = Event.objects.filter(project=proj).filter(as_participant=True)
     return render(
         request,
         template_name="project.html",
@@ -94,6 +96,7 @@ def project(request, projct):
             "proj": projct.lower(),
             "pubs": pubs,
             "events": events,
+            "external_events": participants,
         }
     )
 
