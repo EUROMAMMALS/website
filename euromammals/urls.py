@@ -19,6 +19,7 @@ from django.conf.urls import include
 from django.views.i18n import JavaScriptCatalog
 from django.conf.urls.static import static
 from django.conf import settings
+from django.contrib.auth import views as auth_views
 import website.views as wviews
 
 js_info_dict = {
@@ -28,7 +29,8 @@ js_info_dict = {
 
 urlpatterns = [
     path("mammalsadmin/", admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
+    #path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/password_change/',auth_views.PasswordChangeView.as_view(success_url="/"), name="password_change"),
     path("", wviews.homepage),
     path("contact/", wviews.contact_view),
     path("logos/", wviews.logos),
