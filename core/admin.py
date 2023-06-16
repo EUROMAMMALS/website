@@ -2,6 +2,7 @@ import os
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.urls import path
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -19,7 +20,9 @@ from .models import Organization
 from .models import ResearchGroup
 from .models import User
 
-from .forms import CustomUserCreationForm, CustomUserChangeForm
+from .forms import CustomUserCreationForm
+from .forms import CustomUserChangeForm
+from .forms import UserImportForm
 
 
 class CustomUserAdmin(UserAdmin):
@@ -60,16 +63,24 @@ class CustomUserAdmin(UserAdmin):
 
     def import_csv(self, request):
         if request.method == "POST":
-            import django.contrib.auth
-            usermodel = django.contrib.auth.get_user_model()
+            usermodel = get_user_model()
             csv_file = request.FILES["file"]
             separator = request.POST.get("separator")
+            if request.POST.get("is_staff") == "on":
+                is_staff = True
+            else:
+                is_staff = False
+            if request.POST.get("is_superuser") == "on":
+                is_superuser = True
+            else:
+                is_superuser = False
             lines = csv_file.readlines()
-            header = lines[0].split(separator)
+            header = lines[0].decode().strip().split(separator)
             for line in lines[1:]:
-                vals = line.split(separator)
+                vals = line.decode().strip().split(separator)
                 rg = vals[header.index("research_group")]
                 username = vals[header.index("username")]
+                regroup = None
                 try:
                     regroup = ResearchGroup.objects.get(id=rg)
                 except:
@@ -82,17 +93,18 @@ class CustomUserAdmin(UserAdmin):
                             self.message_user(
                                 request,
                                 f"Research group with value {rg} not found. User {username} not upload",
-                                level=messages.ERROR
+                                level=messages.WARNING
                             )
                 user = usermodel.objects.create_user(
                     email = vals[header.index("email")],
                     username = username,
                     password = vals[header.index("password")],
-                    is_staff = False,
+                    is_staff = is_staff,
                     first_name = vals[header.index("first_name")],
                     last_name = vals[header.index("last_name")],
                     bio = vals[header.index("bio")],
-                    research_group = regroup
+                    research_group = regroup,
+                    is_superuser = is_superuser
                 )
                 for projval in vals[header.index("projects")].split(","):
                     try:
@@ -106,11 +118,11 @@ class CustomUserAdmin(UserAdmin):
                                 f"Project {rg} not found and not set to user {username}",
                                 level=messages.ERROR
                             )
-                    user.projects.add()
+                    user.projects.add(proj)
                 user.save()
             self.message_user(request, "Your csv file has been importeds")
             return redirect("..")
-        form = CsvImportForm()
+        form = UserImportForm()
         payload = {"form": form}
         return render(request, "admin/csv_form.html", payload)
 
