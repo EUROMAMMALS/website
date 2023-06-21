@@ -31,6 +31,8 @@ urlpatterns = [
     path("mammalsadmin/", admin.site.urls),
     #path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/password_change/',auth_views.PasswordChangeView.as_view(success_url="/"), name="password_change"),
+    path('accounts/login/', auth_views.LoginView.as_view(), name="login"),
+    path('accounts/logout/', auth_views.LogoutView.as_view(), name="logout"),
     path("", wviews.homepage),
     path("contact/", wviews.contact_view),
     path("logos/", wviews.logos),
