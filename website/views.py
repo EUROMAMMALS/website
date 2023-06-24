@@ -10,7 +10,9 @@ from django.db.models import Q
 
 from core.models import Project
 from events.models import Event
+from events.models import EventExternal
 from publications.models import Publication
+from publications.models import PublicationExternal
 from pagers.models import Pager
 
 from .forms import ContactForm
@@ -65,7 +67,11 @@ def logos(request):
 def events(request):
     """Function to return the events"""
     myevents = Event.objects.filter(~Q(as_participant=True))
-    return render(request, template_name="events.html", context={"events": myevents})
+    projs = Project.objects.all()
+    outputs = {}
+    for proj in projs:
+        outputs[proj] = myevents.filter(project=proj)
+    return render(request, template_name="events.html", context={"items": outputs})
 
 
 def publications(request):
@@ -86,8 +92,9 @@ def project(request, projct):
     data = json.load(jsonfile)
     proj = Project.objects.get(name=projct)
     pubs = Publication.objects.filter(project=proj)
+    extpub = PublicationExternal.objects.filter(project=proj)
     events = Event.objects.filter(project=proj).filter(~Q(as_participant=True))
-    participants = Event.objects.filter(project=proj).filter(as_participant=True)
+    participants = EventExternal.objects.filter(project=proj)
     return render(
         request,
         template_name="project.html",
@@ -97,6 +104,7 @@ def project(request, projct):
             "pubs": pubs,
             "events": events,
             "external_events": participants,
+            "external_pubs": extpub
         }
     )
 
@@ -109,5 +117,8 @@ def pagers(request):
     user_projs = request.user.projects.all()
     extproj = Project.objects.filter(name="EXTERNAL")
     all_projs = list(chain(user_projs, extproj))
-    mypagers = Pager.objects.filter(project__in=all_projs)
-    return render(request, template_name="pagers.html", context={"items": mypagers})
+    mypagers = Pager.objects.filter(project__in=all_projs).distinct()
+    outputs = {}
+    for proj in all_projs:
+        outputs[proj] = mypagers.filter(project=proj)
+    return render(request, template_name="pagers.html", context={"items": outputs})

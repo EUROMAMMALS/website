@@ -185,6 +185,14 @@
             </div>
             {% endfor %}
         </div>
+        {% if external_pubs|length > 0 %}
+        <h4>External publications related to {{ proj|upper }}</h4>
+            {% for pub in external_pubs %}
+            <div class="col-md-4 mx-auto pt-2">
+                <em>{{ pub.author }}</em> <b>{{ pub.title }}</b> {{ pub.year }} {{ pub.journal }}
+            </div>
+            {% endfor %}
+        {% endif %}
     </div>
 </section>
 {% else %}

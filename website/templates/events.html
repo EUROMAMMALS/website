@@ -3,38 +3,45 @@
 {% load static %}
 
 {% block content %}
-<div class="row">
-{% for item in events %}
-    <div class="col-sm-6">
-        <div class="card m-2">
-            <div class="card-heading">
-                <h4 class="card-title">
-                    <a class="btn" data-bs-toggle="collapse" href="#collapseMammals{{item.id}}" role="button" aria-expanded="false" aria-controls="collapseMammals{{ item.id }}">
-                        <span class="float-left"><b>{{ item.title }}</b> {% if item.site %}<small>({{ item.site }})</small>{% endif %}</span>
-                        <span class="float-right"><i class="fas fa-plus fa-3" id="faicon{{item.id}}"></i></span>
-                    </a>
-                    {% if request.user.is_staff %}
-                    <span><a href="/mammalsadmin/events/event/{{ item.id }}" target="_blank"><i class="fa-solid fa-pen-to-square fa-3" id="editicon{{item.id}}"></i></a></span>
-                    {% endif %}
-                </h4>
-            </div>
-            <div id="collapseMammals{{ item.id }}" class="collapse" data-id="{{ item.id }}">
-                <div class="card-body" id="mammals{{ item.id }}">
-                    {% if item.site %}<b>{{ item.site }}</b>{% endif %}
-                    <p>
-                    {% if item.start and item.end %}
-                    From {{ item.start }} to {{ item.end }}
-                    {% elif item.start and not item.end %}
-                    {{ item.start }}
-                    {% endif %}
-                    </p>
-                    {% if item.descr %}
-                    <p>{{ item.descr }}</p>
-                    {% endif %}
+{% for key, vals in items.items %}
+    {% if vals|length > 0 %}
+    <h3 class="pt-3 text-center">{{ key }}</h3>
+    <div class="row">
+    {% endif %}
+    {% for item in vals %}
+        <div class="col-sm-6">
+            <div class="card m-2">
+                <div class="card-heading">
+                    <h4 class="card-title">
+                        <a class="btn" data-bs-toggle="collapse" href="#collapseMammals{{item.id}}" role="button" aria-expanded="false" aria-controls="collapseMammals{{ item.id }}">
+                            <span class="float-left"><b>{{ item.title }}</b> {% if item.site %}<small>({{ item.site }})</small>{% endif %}</span>
+                            <span class="float-right"><i class="fas fa-plus fa-3" id="faicon{{item.id}}"></i></span>
+                        </a>
+                        {% if request.user.is_staff %}
+                        <span><a href="/mammalsadmin/events/event/{{ item.id }}" target="_blank"><i class="fa-solid fa-pen-to-square fa-3" id="editicon{{item.id}}"></i></a></span>
+                        {% endif %}
+                    </h4>
+                </div>
+                <div id="collapseMammals{{ item.id }}" class="collapse" data-id="{{ item.id }}">
+                    <div class="card-body" id="mammals{{ item.id }}">
+                        {% if item.site %}<b>{{ item.site }}</b>{% endif %}
+                        <p>
+                        {% if item.start and item.end %}
+                        From {{ item.start }} to {{ item.end }}
+                        {% elif item.start and not item.end %}
+                        {{ item.start }}
+                        {% endif %}
+                        </p>
+                        {% if item.descr %}
+                        <p>{{ item.descr }}</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
+    {% endfor %}
+    {% if vals|length > 0 %}
     </div>
+    {% endif %}
 {% endfor %}
-</div>
 {% endblock %}

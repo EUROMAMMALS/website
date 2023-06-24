@@ -55,3 +55,41 @@ class Event(models.Model):
 
     def natural_key(self):
         return self.__unicode__()
+
+
+class EventExternal(models.Model):
+    """ Class for the events to show in the calendar """
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=255)
+    descr = models.TextField(null=True, blank=True)
+    start = models.DateTimeField()
+    end = models.DateTimeField(null=True, blank=True)
+    url = models.URLField(null=True, blank=True)
+    typ = models.CharField(max_length=2, choices=EVENT_TYPE,
+                           blank=True, null=True)
+    venue = models.CharField(max_length=255, null=True, blank=True)
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    # privato
+    main_slide_link = models.URLField(null=True, blank=True)
+    participants = models.ManyToManyField(User, blank=True)
+    # TODO think if it could be useful
+    # logistic_link = models.URLField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'event_external'
+        ordering = ['-start']
+
+    def __unicode__(self):
+        outstr = f"{self.title}"
+        if self.venue:
+            outstr += f", {self.venue}"
+        outstr += f", {self.start.date()}"
+        if self.end:
+            outstr += f" / {self.end.date()}"
+        return smart_str(outstr)
+
+    def __str__(self):
+        return self.__unicode__()
+
+    def natural_key(self):
+        return self.__unicode__()
