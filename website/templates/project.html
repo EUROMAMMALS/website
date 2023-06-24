@@ -180,8 +180,8 @@
         {% endif %}
         <div class="row pt-5">
             {% for pub in pubs %}
-            <div class="col-md-4 mx-auto">
-                <em>{{ pub.author }}</em> <b>{{ pub.title }}</b> {{ pub.year }} {{ pub.journal }}
+            <div class="col-md-4 mx-auto pt-3">
+                <em>{{ pub.author }}</em> <b>{{ pub.title }}</b> {{ pub.year }} {{ pub.journal }} <a href="{{ pub.doi }}" target="_blank">{{ pub.doi }}</a>
             </div>
             {% endfor %}
         </div>
