@@ -231,7 +231,7 @@
         <div class="row">
             {% for pub in pubs %}
             <div class="col-md-6 mx-auto text-center p-2">
-                <small>{{ item.project.all|join:'_' }}_{{ pub.euro_id }}:</small> <em>{{ pub.authors }}</em> <b>{{ pub.title }}</b>; {{ pub.journal }}, {{ pub.year }}<br><a href="{{ pub.doi }}" target="_blank">{{ pub.doi }}</a>
+                <small>{{ pub.project.all|join:'_' }}_{{ pub.euro_id }}:</small> <em>{{ pub.authors }}</em> <b>{{ pub.title }}</b>; {{ pub.journal }}, {{ pub.year }}<br><a href="{{ pub.doi }}" target="_blank">{{ pub.doi }}</a>
             </div>
             {% endfor %}
         </div>
