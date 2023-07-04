@@ -1,0 +1,24 @@
+{
+"type": "FeatureCollection",
+"name": "Afrimove names",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "name": "Kruger National Park", "Lat": -24.506621, "Long": 31.379709 }, "geometry": { "type": "Point", "coordinates": [ 31.379709, -24.506621 ] } },
+{ "type": "Feature", "properties": { "name": "Okavango Delta", "Lat": -19.651009, "Long": 22.90588 }, "geometry": { "type": "Point", "coordinates": [ 22.90588, -19.651009 ] } },
+{ "type": "Feature", "properties": { "name": "Hwange National Park", "Lat": -19.124081, "Long": 26.592405 }, "geometry": { "type": "Point", "coordinates": [ 26.592405, -19.124081 ] } },
+{ "type": "Feature", "properties": { "name": "Central Kalahari Game Reserve", "Lat": -22.349864, "Long": 23.864383 }, "geometry": { "type": "Point", "coordinates": [ 23.864383, -22.349864 ] } },
+{ "type": "Feature", "properties": { "name": "Kalahari Schwelle", "Lat": -23.160767, "Long": 21.37213 }, "geometry": { "type": "Point", "coordinates": [ 21.37213, -23.160767 ] } },
+{ "type": "Feature", "properties": { "name": "Serengeti National Park", "Lat": -1.89281, "Long": 34.685721 }, "geometry": { "type": "Point", "coordinates": [ 34.685721, -1.89281 ] } },
+{ "type": "Feature", "properties": { "name": "Amboseli National Park", "Lat": -2.65267, "Long": 37.26062 }, "geometry": { "type": "Point", "coordinates": [ 37.26062, -2.65267 ] } },
+{ "type": "Feature", "properties": { "name": "Nairobi National Park", "Lat": -1.382553, "Long": 36.861039 }, "geometry": { "type": "Point", "coordinates": [ 36.861039, -1.382553 ] } },
+{ "type": "Feature", "properties": { "name": "Maasai Mara National Reserve", "Lat": -1.387966, "Long": 35.017002 }, "geometry": { "type": "Point", "coordinates": [ 35.017002, -1.387966 ] } },
+{ "type": "Feature", "properties": { "name": "Savuti-Mababe-Linyanti", "Lat": -18.839346, "Long": 24.04827 }, "geometry": { "type": "Point", "coordinates": [ 24.04827, -18.839346 ] } },
+{ "type": "Feature", "properties": { "name": "Tarangire National Park", "Lat": -4.162863, "Long": 36.089933 }, "geometry": { "type": "Point", "coordinates": [ 36.089933, -4.162863 ] } },
+{ "type": "Feature", "properties": { "name": "Asante Sana Reserve", "Lat": -32.440444, "Long": 24.734767 }, "geometry": { "type": "Point", "coordinates": [ 24.734767, -32.440444 ] } },
+{ "type": "Feature", "properties": { "name": "Mapungubwe National Park", "Lat": -22.222055, "Long": 29.347269 }, "geometry": { "type": "Point", "coordinates": [ 29.347269, -22.222055 ] } },
+{ "type": "Feature", "properties": { "name": "Welgevonden Game Reserve", "Lat": -24.312065, "Long": 27.834144 }, "geometry": { "type": "Point", "coordinates": [ 27.834144, -24.312065 ] } },
+{ "type": "Feature", "properties": { "name": "Mkambati Nature Reserve", "Lat": -31.26502, "Long": 29.984 }, "geometry": { "type": "Point", "coordinates": [ 29.984, -31.26502 ] } },
+{ "type": "Feature", "properties": { "name": "Baviaanskloof Nature Reserve", "Lat": -33.598899, "Long": 24.245573 }, "geometry": { "type": "Point", "coordinates": [ 24.245573, -33.598899 ] } },
+{ "type": "Feature", "properties": { "name": "Khomas Hochland", "Lat": -22.666667, "Long": 16.33333 }, "geometry": { "type": "Point", "coordinates": [ 16.33333, -22.666667 ] } }
+]
+}

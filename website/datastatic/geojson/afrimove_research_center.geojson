@@ -1,0 +1,16 @@
+{
+"type": "FeatureCollection",
+"name": "Afrimove nameentres",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "name": "University of the Witwatersrand, Johannesburg", "Lat": -26.187744, "Long": 28.026926 }, "geometry": { "type": "Point", "coordinates": [ 28.026926, -26.187744 ] } },
+{ "type": "Feature", "properties": { "name": "Okavango Research Institute, Maun", "Lat": -19.9021, "Long": 23.528518 }, "geometry": { "type": "Point", "coordinates": [ 23.528518, -19.9021 ] } },
+{ "type": "Feature", "properties": { "name": "Centre D'Ecologie Fonctionnelle & Evolutive, Montpellier", "Lat": 43.63628, "Long": 3.865208 }, "geometry": { "type": "Point", "coordinates": [ 3.865208, 43.63628 ] } },
+{ "type": "Feature", "properties": { "name": "Institute of Biodiversity Animal Health and Comparative Medicine, Glasgow", "Lat": 55.869998, "Long": -4.294171 }, "geometry": { "type": "Point", "coordinates": [ -4.294171, 55.869998 ] } },
+{ "type": "Feature", "properties": { "name": "Smithsonian Conservation Biology Institute, Riverton", "Lat": 38.886278, "Long": -78.163547 }, "geometry": { "type": "Point", "coordinates": [ -78.163547, 38.886278 ] } },
+{ "type": "Feature", "properties": { "name": "Kalahari Research & Conservation, Hukuntsi", "Lat": -23.99312, "Long": 21.749542 }, "geometry": { "type": "Point", "coordinates": [ 21.749542, -23.99312 ] } },
+{ "type": "Feature", "properties": { "name": "Wildlife Ecology and Conservation Group, Wageningen", "Lat": 51.984478, "Long": 5.666115 }, "geometry": { "type": "Point", "coordinates": [ 5.666115, 51.984478 ] } },
+{ "type": "Feature", "properties": { "name": "Nelson Mandela University, Gqeberha", "Lat": -34.001355, "Long": 25.67152 }, "geometry": { "type": "Point", "coordinates": [ 25.67152, -34.001355 ] } },
+{ "type": "Feature", "properties": { "name": "University of Lubljana, Lubljana", "Lat": 46.045919, "Long": 14.504868 }, "geometry": { "type": "Point", "coordinates": [ 14.504868, 46.045919 ] } }
+]
+}

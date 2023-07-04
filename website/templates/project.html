@@ -55,6 +55,13 @@
 <!-- sub-project section -->
 <section class="pt-6 pb-7" id="section-descr">
     <div class="container">
+        {% if proj|lower != "afrimove" %}
+        <p class="text-center">
+        {% with 'img/logos/'|add:proj|lower|add:'_logo.png' as projimg %}
+            <img src="{% static projimg %}" class="p-2">
+        {% endwith %}
+        </p>
+        {% endif %}
         <div class="row mt-5">
             <div class="col-md-10 mx-auto">
                 <div class="row text-muted">
@@ -69,14 +76,14 @@
 <!--maps section-->
 <section class="p-5 section-angle top-right bottom-right" id="section-map">
     <div class="container">
-        <div class="row p-2">
+        <!--<div class="row p-2">
             <div class="col-6 mx-auto text-center">
                 <button class="btn btn-primary">Research groups</button>
             </div>
             <div class="col-6 mx-auto text-center">
                 <button class="btn btn-primary">Study areas</button>
             </div>
-        </div>
+        </div>-->
         <div class="row">
             <div class="col-md-12 mx-auto text-center">
                 <div id="map"></div>
@@ -181,7 +188,7 @@
         <div class="row pt-5">
             {% for pub in pubs %}
             <div class="col-md-4 mx-auto pt-3">
-                <em>{{ pub.author }}</em> <b>{{ pub.title }}</b> {{ pub.year }} {{ pub.journal }} <a href="{{ pub.doi }}" target="_blank">{{ pub.doi }}</a>
+                <p><small>{{ item.project.all|join:'_' }}_{{ item.euro_id }}:</small> <b>{{ pub.title }}</b> <i>{{ pub.authors }}</i>, {{ pub.journal }}, {{ pub.year }}<br><a href="{{ pub.doi }}" target="_blank">{{ pub.doi }}</a></p>
             </div>
             {% endfor %}
         </div>
@@ -266,32 +273,127 @@
 {% block extra_script %}
     <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
     <script>
-        var wms_group = new ol.layer.Tile({
+        function stringDivider(str, width, spaceReplacer) {
+            if (str.length > width) {
+              let p = width;
+              while (p > 0 && str[p] != ' ' && str[p] != '-') {
+                p--;
+              }
+              if (p > 0) {
+                let left;
+                if (str.substring(p, p + 1) == '-') {
+                  left = str.substring(0, p + 1);
+                } else {
+                  left = str.substring(0, p);
+                }
+                const right = str.substring(p + 1);
+                return left + spaceReplacer + stringDivider(right, width, spaceReplacer);
+              }
+            }
+            return str;
+          }
+        {% if proj == "afrimove" %}
+        function getText(feature, resolution){
+            if (resolution < 2500) {
+                return stringDivider(feature.get("name"), 25, "\n");
+            } else {
+                return "";
+            }
+        }
+        function research_function(feature, resolution){
+            return new ol.style.Style({
+                image: new ol.style.Icon({
+                  anchor: [0.5, 1],
+                  src: '/static/img/building-solid.svg',
+                  scale: 0.5,
+                  color: 'blue',
+                }),
+                text: new ol.style.Text({
+                    text: getText(feature, resolution),
+                    font: 'Calibri,sans-serif',
+                    fill: new ol.style.Fill({
+                      color: 'black',
+                    }),
+                    stroke: new ol.style.Stroke({
+                      color: 'white',
+                      width: 2,
+                    }),
+                    //offsetY: 10
+                }),
+            })
+        }
+
+        function area_function(feature, resolution){
+            return new ol.style.Style({
+                image: new ol.style.Icon({
+                  anchor: [0.5, 1],
+                  src: '/static/img/paw-solid.svg',
+                  scale: 0.5,
+                  color: 'blue',
+                }),
+                text: new ol.style.Text({
+                    text: getText(feature, resolution),
+                    font: 'Calibri,sans-serif',
+                    fill: new ol.style.Fill({
+                      color: 'black',
+                    }),
+                    stroke: new ol.style.Stroke({
+                      color: 'white',
+                      width: 2,
+                    }),
+                    offsetY: 10
+                }),
+            })
+        }
+
+        var group = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                url: '/static/geojson/afrimove_research_center.geojson',
+                format: new ol.format.GeoJSON()
+            }),
+            style: research_function,
+        });
+
+        var area = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                url: '/static/geojson/afrimove_study_areas.geojson',
+                format: new ol.format.GeoJSON()
+            }),
+            style: area_function,
+        });
+        var center = ol.proj.transform([0, 0], 'EPSG:4326', 'EPSG:3857');
+        var zoom = 1;
+        {% else %}
+        var group = new ol.layer.Tile({
             source: new ol.source.TileWMS({
                 url: 'http://eurodeer2.fmach.it/production/euromammals_ows',
                 params: {'LAYERS': '{{ proj|lower }}_research_groups'},
                 attributions: ['EUROMAMMALS project'],
             })
         })
-        var wms_area = new ol.layer.Tile({
+        var area = new ol.layer.Tile({
             source: new ol.source.TileWMS({
                 url: 'http://eurodeer2.fmach.it/production/euromammals_ows',
                 params: {'LAYERS': '{{ proj|lower }}_study_areas'},
                 attributions: ['EUROMAMMALS project'],
             })
         })
+        var center = ol.proj.transform([8, 50], 'EPSG:4326', 'EPSG:3857');
+        var zoom = 4;
+        {% endif %}
+
         var map = new ol.Map({
             layers: [
                 new ol.layer.Tile({
                     source: new ol.source.OSM()
                 }),
-                wms_group,
-                wms_area,
+                group,
+                area,
             ],
             target: 'map',
             view: new ol.View({
-                center: ol.proj.transform([8, 50], 'EPSG:4326', 'EPSG:3857'),
-                zoom: 4
+                center: center,
+                zoom: zoom
             })
         });
 
