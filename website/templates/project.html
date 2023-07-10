@@ -55,7 +55,7 @@
 <!-- sub-project section -->
 <section class="pt-6 pb-7" id="section-descr">
     <div class="container">
-        {% if proj|lower != "afrimove" %}
+        {% if proj|lower not in "afrimove,eurojackal" %}
         <p class="text-center">
         {% with 'img/logos/'|add:proj|lower|add:'_logo.png' as projimg %}
             <img src="{% static projimg %}" class="p-2">
