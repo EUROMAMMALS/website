@@ -22,8 +22,9 @@ def homepage(request):
     """Function to return the home page"""
     today = date.today()
     myevents = Event.objects.filter(start__gt=today).filter(~Q(as_participant=True))[:6]
+    reversed_events = sorted(myevents, key=lambda o: o.start)
     pubs = Publication.objects.all()[:6]
-    return render(request, template_name="home.html", context={"events": myevents, "pubs": pubs})
+    return render(request, template_name="home.html", context={"events": reversed_events, "pubs": pubs})
 
 
 def contact_view(request):
