@@ -24,12 +24,12 @@
                 </div>
                 <div id="collapseMammals{{ item.id }}" class="collapse" data-id="{{ item.id }}">
                     <div class="card-body" id="mammals{{ item.id }}">
-                        {% if item.site %}<b>{{ item.site }}</b>{% endif %}
+                        {% if item.venue %}<b>{{ item.venue }}</b>{% endif %}
                         <p>
                         {% if item.start and item.end %}
-                        From {{ item.start }} to {{ item.end }}
+                        From {{ item.start|date:'Y-m-d' }} to {{ item.end|date:'Y-m-d' }}
                         {% elif item.start and not item.end %}
-                        {{ item.start }}
+                        {{ item.start|date:'Y-m-d' }}
                         {% endif %}
                         </p>
                         {% if item.descr %}
