@@ -132,7 +132,7 @@
                         <a href="/eurojackal/" class="btn">{% trans "More info..." %}</a>
                     </div>
                     <div class="col-md-6 text-center p-4">
-                        <img width=90% src="{% static 'img/racoon.webp' %}" class="p-2">
+                        <img width=90% src="{% static 'img/raccoon.webp' %}" class="p-2">
                         <img src="{% static 'img/logos/euroraccoon_logo.png' %}" class="p-2">
                         <p class="text-muted">
                             EURORACCOON works collaboratively on spatial data of raccoons (<em>Procyon lotor</em>), a North-American species that was introduced in the 20th Century,
@@ -344,24 +344,55 @@
 {% block extra_script %}
     <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
     <script>
-        var wms = new ol.layer.Tile({
-            source: new ol.source.TileWMS({
-                url: 'http://eurodeer2.fmach.it/production/euromammals_ows',
-                params: {'LAYERS': 'eurodeer_research_groups'},
-                attributions: ['EUROMAMMALS project'],
+        function getText(feature, resolution){
+            if (resolution < 2500) {
+                return stringDivider(feature.get("name"), 25, "\n");
+            } else {
+                return "";
+            }
+        }
+        function research_function(feature, resolution){
+            return new ol.style.Style({
+                image: new ol.style.Icon({
+                  anchor: [0.5, 1],
+                  src: '/static/img/building-solid.svg',
+                  scale: 0.5,
+                  color: 'blue',
+                }),
+                text: new ol.style.Text({
+                    text: getText(feature, resolution),
+                    font: 'Calibri,sans-serif',
+                    fill: new ol.style.Fill({
+                      color: 'black',
+                    }),
+                    stroke: new ol.style.Stroke({
+                      color: 'white',
+                      width: 2,
+                    }),
+                    //offsetY: 10
+                }),
             })
-        })
+        }
+
+        var group = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                url: '/static/geojson/euromammals.geojson',
+                format: new ol.format.GeoJSON()
+            }),
+            style: research_function,
+        });
+
         var map = new ol.Map({
             layers: [
                 new ol.layer.Tile({
                     source: new ol.source.OSM()
                 }),
-                wms
+                group
             ],
             target: 'map',
             view: new ol.View({
-                center: ol.proj.transform([8, 50], 'EPSG:4326', 'EPSG:3857'),
-                zoom: 4
+                center: ol.proj.transform([-20, 50], 'EPSG:4326', 'EPSG:3857'),
+                zoom: 3
             })
         });
 
