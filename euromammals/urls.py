@@ -30,7 +30,10 @@ js_info_dict = {
 urlpatterns = [
     path("mammalsadmin/", admin.site.urls),
     #path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/password_change/',auth_views.PasswordChangeView.as_view(success_url="/"), name="password_change"),
+    path('accounts/password_change/',
+         auth_views.PasswordChangeView.as_view(success_url="/"),
+         name="password_change"
+    ),
     path('accounts/login/', auth_views.LoginView.as_view(), name="login"),
     path('accounts/logout/', auth_views.LogoutView.as_view(), name="logout"),
     path("", wviews.homepage),
@@ -49,6 +52,7 @@ urlpatterns = [
     path("euroibex/", wviews.project, {"projct": "EUROIBEX"}),
     path("eurojackal/", wviews.project, {"projct": "EUROJACKAL"}),
     path("afrimove/", wviews.project, {"projct": "AfriMove"}),
+    path("euroraccoon/", wviews.project, {"projct": "EURORACCOON"}),
     path('i18n/', include('django.conf.urls.i18n')),
     path('jsi18n/', JavaScriptCatalog.as_view(), js_info_dict,
          name='javascript_catalog'),
