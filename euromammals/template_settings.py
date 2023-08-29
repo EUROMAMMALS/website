@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.gis",
+    "captcha",
     "core",
     "events",
     "publications",
@@ -156,3 +157,6 @@ DEFAULT_FROM_EMAIL = ""
 EMAIL_HOST_USER = DEFAULT_FROM_EMAIL
 EMAIL_HOST = ""
 EMAIL_PORT = 25
+
+CAPTCHA_FOREGROUND_COLOR = "#000000"
+CAPTCHA_FONT_SIZE = 30

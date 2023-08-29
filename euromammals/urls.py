@@ -56,6 +56,7 @@ urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     path('jsi18n/', JavaScriptCatalog.as_view(), js_info_dict,
          name='javascript_catalog'),
+    path('captcha/', include('captcha.urls')),
 ] + static(settings.STATIC_URL,
            document_root=settings.STATIC_ROOT)
 

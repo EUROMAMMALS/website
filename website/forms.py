@@ -1,5 +1,6 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
+from captcha.fields import CaptchaField
 from core.models import Project
 
 class ContactForm(forms.Form):
@@ -32,3 +33,4 @@ class ContactForm(forms.Form):
         required=True,
         help_text=_("Message")
     )
+    captcha = CaptchaField()
