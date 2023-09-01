@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+<h2 class="text-center">{{ item.title }}</h2>
+
+{% if item.image_link %}
+<img src="{{item.image_link}}" />
+{% endif %}
+
+{% if item.venue %}<h3 class="text-center">{{ item.venue }}</h3>{% endif %}
+{% if item.start and item.end %}
+<h4 class="text-center">From {{ item.start|date:'Y-m-d' }} to {{ item.end|date:'Y-m-d' }}</h4>
+{% elif item.start and not item.end %}
+<h4 class="text-center">{{ item.start|date:'Y-m-d' }}</h4>
+{% endif %}
+
+{% if item.descr %}
+<p>{{ item.descr }}</p>
+{% endif %}
+
+<p>
+{% if item.typ %}
+{{ item.get_typ_display }}
+{% endif %}
+{% if item.project %}
+related to {{ item.project }}
+{% endif %}
+</p>
+
+{% if item.main_slide_link %}
+{% trans "You can find the main slides " %}<a href="{{ item.main_slide_link }}" target="_blank">{% trans "here" %}</a>
+{% endif %}
+
+{% if item.folder_slides_link %}
+{% trans "You can find the all the slides " %}<a href="{{ item.folder_slides_link }}" target="_blank">{% trans "here" %}</a>
+{% endif %}
+
+{% if item.report_link %}
+{% trans "You can find the report " %}<a href="{{ item.report_link }}" target="_blank">{% trans "here" %}</a>
+{% endif %}
+
+{% if item.program_link %}
+{% trans "You can access the main program " %}<a href="{{ item.program_link }}" target="_blank">{% trans "here" %}</a>
+{% endif %}
+
+{% now "Y-m-d" as today %}
+{% if item.registration_until %}
+    {% if item.registration_until|date:"Y-m-d" < today %}
+    {% trans "You can register to the confernce at this " %}<a href="{{ item.registration_link }}" target="_blank">{% trans "link" %}</a>
+    {% endif %}
+{% endif %}
+{% endblock %}

@@ -74,6 +74,10 @@ def events(request):
         outputs[proj] = myevents.filter(project=proj)
     return render(request, template_name="events.html", context={"items": outputs})
 
+def event(request, idd):
+    """Function to return page for single event"""
+    thisevent = Event.objects.get(id=idd)
+    return render(request, template_name="event.html", context={"item": thisevent})
 
 def publications(request):
     """Function to return the publications"""

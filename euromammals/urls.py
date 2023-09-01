@@ -40,6 +40,7 @@ urlpatterns = [
     path("contact/", wviews.contact_view),
     path("logos/", wviews.logos),
     path("events/", wviews.events),
+    path("event/<int:idd>/", wviews.event),
     path("pagers/", wviews.pagers),
     path("pubs/", wviews.publications),
     path("education/", wviews.educational),
