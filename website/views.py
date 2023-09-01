@@ -131,5 +131,5 @@ def pagers(request):
     mypagers = Pager.objects.filter(project__in=all_projs).distinct()
     outputs = {}
     for proj in all_projs:
-        outputs[proj] = {"pagers": mypagers.filter(project=proj), "url": proj.pager_status}
-    return render(request, template_name="pagers.html", context={"items": outputs})
+        outputs[str(proj)] = {"pagers": mypagers.filter(project=proj), "url": proj.pager_status}
+    return render(request, template_name="pagers.html", context={"items": outputs, "euromammalsurl": mamproj[0].pager_status})

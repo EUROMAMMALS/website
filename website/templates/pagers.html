@@ -1,17 +1,18 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load static %}
+{% load filters %}
 
 {% block content %}
 {% for key, vals in items.items %}
     {% if vals.pagers|length > 0 %}
     <h3 class="pt-3 text-center">{{ key }}</h3>
     {% if vals.url %}
-    <p>You can see the full list also in this <a href="{{ vals.url }}" target="_blank">document</a></p>
+    <p>For the status of pagers, please see and leave your comments <a href="{{ vals.url }}" target="_blank">here</a></p>
     {% endif %}
-    {% with items.euromammals as euromammals %}
-    <p>For inter-project pager you can see the list <a href="{{ euromammals.url }}">here</a></p>
-    {% endwith %}
+    {% if euromammalsurl %}
+    <p>See the status of inter-network pagers <a href="{{ euromammalsurl }}">here</a></p>
+    {% endif %}
     {% endif %}
     {% for item in vals.pagers %}
     <div class="card">
@@ -37,7 +38,7 @@
                 <a href="{{item.link}}" target="_blank"><b>Go to the pager</b></a>
                 {% if item.external_participant_link %}
                 <br>
-                <a href="{{item.external_participant_link}}" target="_blank"><b>Go to the participant link</b></a>
+                <a href="{{item.external_participant_link}}" target="_blank"><b>See the status of external pagers</b></a>
                 {% endif %}
             </div>
         </div>
