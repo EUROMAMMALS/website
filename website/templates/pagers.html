@@ -4,10 +4,16 @@
 
 {% block content %}
 {% for key, vals in items.items %}
-    {% if vals|length > 0 %}
+    {% if vals.pagers|length > 0 %}
     <h3 class="pt-3 text-center">{{ key }}</h3>
+    {% if vals.url %}
+    <p>You can see the full list also in this <a href="{{ vals.url }}" target="_blank">document</a></p>
+    {% with items.euromammals as euromammals %}
+    <p>For inter-project pager you can see the list <a href="{{ euromammals.url }}">here</a></p>
+    {% endwith %}
     {% endif %}
-    {% for item in vals %}
+    {% endif %}
+    {% for item in vals.pagers %}
     <div class="card">
         <div class="card-heading">
             <h4 class="card-title">
