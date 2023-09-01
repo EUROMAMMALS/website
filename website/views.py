@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
 from core.models import Project
 from events.models import Event
@@ -74,10 +75,13 @@ def events(request):
         outputs[proj] = myevents.filter(project=proj)
     return render(request, template_name="events.html", context={"items": outputs})
 
+
+@login_required
 def event(request, idd):
     """Function to return page for single event"""
     thisevent = Event.objects.get(id=idd)
     return render(request, template_name="event.html", context={"item": thisevent})
+
 
 def publications(request):
     """Function to return the publications"""
@@ -112,6 +116,7 @@ def project(request, projct):
             "external_pubs": extpub
         }
     )
+
 
 def pagers(request):
     """Function to return pagers

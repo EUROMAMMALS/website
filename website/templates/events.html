@@ -20,6 +20,8 @@
                         {% if request.user.is_staff %}
                         &nbsp;&nbsp;
                         <span><a href="/mammalsadmin/events/event/{{ item.id }}" target="_blank"><i class="fa-solid fa-pen-to-square fa-3" id="editicon{{item.id}}"></i></a></span>
+                        {% endif %}
+                        {% if request.user.is_authenticated %}
                         &nbsp;&nbsp;
                         <span><a href="/event/{{ item.id }}"><i class="fa-solid fa-right-to-bracket" id="gototevent{{item.id}}"></i></a></span>
                         {% endif %}

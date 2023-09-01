@@ -30,25 +30,25 @@ related to {{ item.project }}
 </p>
 
 {% if item.main_slide_link %}
-{% trans "You can find the main slides " %}<a href="{{ item.main_slide_link }}" target="_blank">{% trans "here" %}</a>
+<p>{% trans "You can find the main slides " %}<a href="{{ item.main_slide_link }}" target="_blank">{% trans "here" %}</a></p>
 {% endif %}
 
 {% if item.folder_slides_link %}
-{% trans "You can find the all the slides " %}<a href="{{ item.folder_slides_link }}" target="_blank">{% trans "here" %}</a>
+<p>{% trans "You can find the all the slides " %}<a href="{{ item.folder_slides_link }}" target="_blank">{% trans "here" %}</a></p>
 {% endif %}
 
 {% if item.report_link %}
-{% trans "You can find the report " %}<a href="{{ item.report_link }}" target="_blank">{% trans "here" %}</a>
+<p>{% trans "You can find the report " %}<a href="{{ item.report_link }}" target="_blank">{% trans "here" %}</a></p>
 {% endif %}
 
 {% if item.program_link %}
-{% trans "You can access the main program " %}<a href="{{ item.program_link }}" target="_blank">{% trans "here" %}</a>
+<p>{% trans "You can access the main program " %}<a href="{{ item.program_link }}" target="_blank">{% trans "here" %}</a></p>
 {% endif %}
 
 {% now "Y-m-d" as today %}
 {% if item.registration_until %}
     {% if item.registration_until|date:"Y-m-d" < today %}
-    {% trans "You can register to the confernce at this " %}<a href="{{ item.registration_link }}" target="_blank">{% trans "link" %}</a>
+    <p>{% trans "You can register to the confernce at this " %}<a href="{{ item.registration_link }}" target="_blank">{% trans "link" %}</a></p>
     {% endif %}
 {% endif %}
 {% endblock %}
