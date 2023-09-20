@@ -55,13 +55,11 @@
 <!-- sub-project section -->
 <section class="pt-6 pb-7" id="section-descr">
     <div class="container">
-        {% if proj|lower not in "afrimove,eurojackal" %}
         <p class="text-center">
         {% with 'img/logos/'|add:proj|lower|add:'_logo.png' as projimg %}
             <img src="{% static projimg %}" class="p-2">
         {% endwith %}
         </p>
-        {% endif %}
         <div class="row mt-5">
             <div class="col-md-10 mx-auto">
                 <div class="row text-muted">
