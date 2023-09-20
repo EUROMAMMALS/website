@@ -32,6 +32,8 @@ class Project(models.Model):
     start_year = models.IntegerField()
     pager_status = models.URLField(null=True, blank=True)
     mailing_list = models.URLField(null=True, blank=True)
+    template_link = models.URLField(null=True, blank=True)
+    termsofuse_link = models.URLField(null=True, blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -133,3 +135,4 @@ class User(AbstractUser):
         ResearchGroup, on_delete=models.PROTECT, null=True, blank=True
     )
     projects = models.ManyToManyField(Project)
+    euromammals_username = models.TextField(max_length=500, null=True, blank=True)
