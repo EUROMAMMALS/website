@@ -127,7 +127,8 @@ def pagers(request):
     user_projs = request.user.projects.all()
     extproj = Project.objects.filter(name="EXTERNAL")
     mamproj = Project.objects.filter(name="EUROMAMMALS")
-    all_projs = list(chain(user_projs, extproj, mamproj))
+    eurocam = Project.objects.filter(name="EUROCAM")
+    all_projs = list(chain(user_projs, extproj, mamproj, eurocam))
     mypagers = Pager.objects.filter(project__in=all_projs).distinct()
     outputs = {}
     for proj in all_projs:
