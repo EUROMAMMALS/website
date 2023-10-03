@@ -266,6 +266,35 @@
         </div>
     </div>
 </section>
+
+{% if template or termofuse %}
+<hr>
+<section class="p-5 section-angle top-right bottom-right" id="projlink">
+    <div class="container">
+        <div class="row">
+            {% if template %}
+            <div class="col-md-6 mx-auto text-center">
+                <p class="lead text-muted">
+                    Download the templates to import data into {{proj|upper}} database
+                    <br>
+                    <a href={{template}} target="_blank" class="btn btn-primary">Download template</a>
+                </p>
+            </div>
+            {% endif %}
+            {% if termofuse %}
+            <div class="col-md-6 mx-auto text-center">
+                <p class="lead text-muted">
+                    Download the term of use file to join the tribe
+                    <br>
+                    <a href={{termofuse}} target="_blank" class="btn btn-primary">Download file</a>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
 {% endblock %}
 
 {% block extra_script %}

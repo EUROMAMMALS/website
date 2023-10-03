@@ -96,10 +96,20 @@ def educational(request):
 
 def project(request, projct):
     """Function to return project"""
+    try:
+        user_projs = request.user.projects.all()
+    except:
+        user_projs = []
     jsonpath = os.path.join(settings.STATIC_ROOT, "projects", f"{projct.lower()}.json")
     jsonfile = open(jsonpath)
     data = json.load(jsonfile)
     proj = Project.objects.get(name=projct)
+    if proj in user_projs:
+        proj_template = proj.template_link
+        proj_termofuse = proj.termsofuse_link
+    else:
+        proj_template = None
+        proj_termofuse = None
     pubs = Publication.objects.filter(project=proj)
     extpub = PublicationExternal.objects.filter(project=proj)
     events = Event.objects.filter(project=proj).filter(~Q(as_participant=True))
@@ -113,7 +123,9 @@ def project(request, projct):
             "pubs": pubs,
             "events": events,
             "external_events": participants,
-            "external_pubs": extpub
+            "external_pubs": extpub,
+            "template": proj_template,
+            "termofuse": proj_termofuse
         }
     )
 
