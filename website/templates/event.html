@@ -3,52 +3,97 @@
 {% load static %}
 
 {% block content %}
-<h2 class="text-center">{{ item.title }}</h2>
+<h2 class="text-center text-dark">{{ item.title }}</h2>
 
 {% if item.image_link %}
-<img src="{{item.image_link}}" />
+<p class="pt-2 pb-2"><img src="{{item.image_link}}" width="100%"/><p>
 {% endif %}
 
 {% if item.venue %}<h3 class="text-center">{{ item.venue }}</h3>{% endif %}
 {% if item.start and item.end %}
-<h4 class="text-center">From {{ item.start|date:'Y-m-d' }} to {{ item.end|date:'Y-m-d' }}</h4>
+<h4 class="text-center">From <b>{{ item.start|date:'Y-m-d' }}</b> to <b>{{ item.end|date:'Y-m-d' }}</b></h4>
 {% elif item.start and not item.end %}
-<h4 class="text-center">{{ item.start|date:'Y-m-d' }}</h4>
+<h4 class="text-center"><b>{{ item.start|date:'Y-m-d' }}</b></h4>
 {% endif %}
 
-{% if item.descr %}
-<p>{{ item.descr }}</p>
-{% endif %}
+<section class="p-5 section-angle top-right bottom-right" id="sponsor">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 mx-auto text-center">
+                {% if item.descr %}
+                <p>{{ item.descr }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% if item.url %}
+        <a href="{{ item.url }}" target="_blank" class="btn btn-primary mt-2 mb-2">{% trans "Go to main web site" %}</a>
+        {% endif %}
+        <div class="row">
+            <div class="col-12 mx-auto text-center">
+                {% if item.typ %}
+                {{ item.get_typ_display }}
+                {% else %}
+                This event
+                {% endif %}
+                {% if item.project %}
+                is related to {{ item.project }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
 
-<p>
-{% if item.typ %}
-{{ item.get_typ_display }}
-{% endif %}
-{% if item.project %}
-related to {{ item.project }}
-{% endif %}
-</p>
-
-{% if item.main_slide_link %}
-<p>{% trans "You can find the main slides " %}<a href="{{ item.main_slide_link }}" target="_blank">{% trans "here" %}</a></p>
-{% endif %}
-
-{% if item.folder_slides_link %}
-<p>{% trans "You can find the all the slides " %}<a href="{{ item.folder_slides_link }}" target="_blank">{% trans "here" %}</a></p>
-{% endif %}
-
-{% if item.report_link %}
-<p>{% trans "You can find the report " %}<a href="{{ item.report_link }}" target="_blank">{% trans "here" %}</a></p>
-{% endif %}
-
-{% if item.program_link %}
-<p>{% trans "You can access the main program " %}<a href="{{ item.program_link }}" target="_blank">{% trans "here" %}</a></p>
-{% endif %}
-
+<hr>
 {% now "Y-m-d" as today %}
 {% if item.registration_until %}
-    {% if item.registration_until|date:"Y-m-d" < today %}
-    <p>{% trans "You can register to the confernce at this " %}<a href="{{ item.registration_link }}" target="_blank">{% trans "link" %}</a></p>
-    {% endif %}
+{% if item.registration_until|date:"Y-m-d" < today %}
+<section class="p-5 section-angle top-right bottom-right" id="section-contact">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mx-auto text-center">
+                {% trans "If you want to participate" %}
+                <br>
+                <a href="{{ item.registration_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Register here" %}</a>
+            </div>
+        </div>
+    </div>
+</section>
 {% endif %}
+{% endif %}
+
+<section class="p-5 section-angle top-right bottom-right" id="section-contact">
+    <div class="container">
+        <div class="row">
+            {% if item.main_slide_link %}
+            <div class="col-md-4 mx-auto text-center">
+            {% trans "If you look for the main slides" %}
+            <br>
+            <a href="{{ item.main_slide_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Download here" %}</a>
+            </div>
+            {% endif %}
+            {% if item.folder_slides_link %}
+            <div class="col-md-4 mx-auto text-center">
+            {% trans "If you look for all the other slides " %}
+            <br>
+            <a href="{{ item.folder_slides_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Download here" %}</a>
+            </div>
+            {% endif %}
+            {% if item.report_link %}
+            <div class="col-md-4 mx-auto text-center">
+            {% trans "If you look for the report " %}
+            <br>
+            <a href="{{ item.report_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Download here" %}</a>
+            </div>
+            {% endif %}
+            {% if item.program_link %}
+            <div class="col-md-4 mx-auto text-center">
+            {% trans "If you look for the main program " %}
+            <br>
+            <a href="{{ item.program_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Download here" %}</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
 {% endblock %}
