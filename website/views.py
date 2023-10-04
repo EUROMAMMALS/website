@@ -145,4 +145,20 @@ def pagers(request):
     outputs = {}
     for proj in all_projs:
         outputs[str(proj)] = {"pagers": mypagers.filter(project=proj), "url": proj.pager_status}
-    return render(request, template_name="pagers.html", context={"items": outputs, "euromammalsurl": mamproj[0].pager_status})
+    return render(
+        request,
+        template_name="pagers.html",
+        context={"items": outputs, "euromammalsurl": mamproj[0].pager_status}
+    )
+
+def mailing(request):
+    """Function to return mailing lists for a user
+
+    Args:
+        request (obj): the request object
+    """
+    user_projs = request.user.projects.all()
+    outputs = {}
+    for proj in user_projs:
+        outputs[str(proj)] = proj.mailing_list
+    return render(request, template_name="mailing.html", context={"items": outputs})
