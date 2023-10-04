@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+    {% if items|length > 0 %}
+    <h3 class="pt-3 text-center">Mailing List</h3>
+    <div class="row">
+    {% for key, vals in items.items %}
+        {% if vals is not none %}
+        <div class="col-sm-3">
+            <a href={{vals}} target="_blank" class="btn btn-primary mt-3">{{key|upper}} mailing list</a>
+        </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+    {% endif %}
+{% endblock %}
