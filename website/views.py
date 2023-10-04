@@ -129,7 +129,7 @@ def project(request, projct):
         }
     )
 
-
+@login_required
 def pagers(request):
     """Function to return pagers
 
@@ -151,6 +151,7 @@ def pagers(request):
         context={"items": outputs, "euromammalsurl": mamproj[0].pager_status}
     )
 
+@login_required
 def mailing(request):
     """Function to return mailing lists for a user
 
