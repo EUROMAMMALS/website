@@ -9,6 +9,7 @@ import os
 import urllib.request
 import tempfile
 import zipfile
+import random
 # import json
 import base64
 from PIL import Image
@@ -485,3 +486,19 @@ def exiffromimage(img):
         ExifTags.TAGS[k]: v for k, v in img._getexif().items() if k in ExifTags.TAGS
     }
     return exif
+
+def captcha_challenge():
+    """Function to be used in the captcha for form
+
+    Returns:
+        list: a list with the value to show and the challenge
+    """
+    challenge = u''
+    response = u''
+    for i in range(4):
+        digit = random.randint(0,9)
+        challenge += str(digit)
+
+    response = str(int(challenge) + 1)
+    print(challenge, response)
+    return challenge, response

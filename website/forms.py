@@ -33,4 +33,4 @@ class ContactForm(forms.Form):
         required=True,
         help_text=_("Message")
     )
-    captcha = CaptchaField()
+    captcha = CaptchaField(help_text=_("Sum 2 and subtract 1 to get the final value"))

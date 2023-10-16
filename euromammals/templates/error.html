@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% load filters %}
+
+{% block title %}EUROMAMMALS {% blocktrans %}errors{% endblocktrans %}{% endblock %}
+{% block content %}
+	<h2>EUROMAMMALS: {% blocktrans %}contact form{% endblocktrans %}</h2>
+  	<div class="alert alert-danger" role="alert">
+	 {% blocktrans %}Error compiling the form{% endblocktrans %}
+	</div>
+	<div class="row">
+		<p>The following fields gave problem:</p><br>
+		<ul>
+		{% for err in errs %}
+			<li>{{ err }}</li>
+		{% endfor %}
+		</ul>
+	</div>
+
+  <div class="links">
+	<a href="/contact/">{% blocktrans %}Back to contact form{% endblocktrans %}</a>
+	<br>
+    <a href="/">{% blocktrans %}Back to homepage{% endblocktrans %}</a>
+  </div>
+{% endblock %}

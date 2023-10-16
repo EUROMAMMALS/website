@@ -47,6 +47,9 @@ def contact_view(request):
                 return render(request, 'email_sent.html')
             else:
                 return render(request, "500.html")
+        else:
+            errors = form.errors.keys()
+            return render(request, "error.html", {"errs": errors})
     form = ContactForm()
     context = {'form': form}
     return render(request, 'contact.html', context)
