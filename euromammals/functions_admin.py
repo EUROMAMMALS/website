@@ -32,6 +32,11 @@ class CsvImportForm(FileImportForm):
     )  # , help_text="Columns separator used in the CSV file")
 
 
+class FilterProjectAdmin(admin.ModelAdmin):
+    """General admin class to filter by projects"""
+
+    list_filter = ["project"]
+
 class CSVAdmin(admin.ModelAdmin):
     """General admin class to have capability to add CSV file"""
 
