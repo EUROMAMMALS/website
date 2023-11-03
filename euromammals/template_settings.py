@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
+import random
 from pathlib import Path
 
+from .functions import captcha_challenge
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -160,3 +162,6 @@ EMAIL_PORT = 25
 
 CAPTCHA_FOREGROUND_COLOR = "#000000"
 CAPTCHA_FONT_SIZE = 30
+CAPTCHA_LETTER_ROTATION = [random.randint(0,90)]
+#CAPTCHA_NOISE_FUNCTIONS = []
+CAPTCHA_CHALLENGE_FUNCT = captcha_challenge
