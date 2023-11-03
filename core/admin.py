@@ -95,6 +95,7 @@ class CustomUserAdmin(UserAdmin):
                                 f"Research group with value {rg} not found. User {username} not upload",
                                 level=messages.WARNING
                             )
+                            continue
                 user = usermodel.objects.create_user(
                     email = vals[header.index("email")],
                     username = username,
