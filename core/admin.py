@@ -9,6 +9,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
 from django.conf import settings
+from django.core.mail import send_mail
 
 # Register your models here.
 from euromammals.functions_admin import CSVAdmin
@@ -19,6 +20,7 @@ from .models import Project
 from .models import Organization
 from .models import ResearchGroup
 from .models import User
+from .models import ResearchGroupProject
 
 from .forms import CustomUserCreationForm
 from .forms import CustomUserChangeForm
@@ -77,6 +79,8 @@ class CustomUserAdmin(UserAdmin):
                 is_superuser = False
             lines = csv_file.readlines()
             header = lines[0].decode().strip().split(separator)
+            emails = []
+            errors = 0
             for line in lines[1:]:
                 vals = line.decode().strip().split(separator)
                 rg = vals[header.index("research_group")]
@@ -96,6 +100,7 @@ class CustomUserAdmin(UserAdmin):
                                 f"Research group with value {rg} not found. User {username} not upload",
                                 level=messages.WARNING
                             )
+                            errors += 1
                             continue
                 user = usermodel.objects.create_user(
                     email = vals[header.index("email")],
@@ -104,25 +109,39 @@ class CustomUserAdmin(UserAdmin):
                     is_staff = is_staff,
                     first_name = vals[header.index("first_name")],
                     last_name = vals[header.index("last_name")],
-                    bio = vals[header.index("bio")],
-                    research_group = regroup,
+                    #bio = vals[header.index("bio")],
                     is_superuser = is_superuser
                 )
-                for projval in vals[header.index("projects")].split(","):
-                    try:
-                        proj = Project.objects.get(name=projval)
-                    except:
-                        try:
-                            proj = Project.objects.get(id=projval)
-                        except:
-                            self.message_user(
-                                request,
-                                f"Project {rg} not found and not set to user {username}",
-                                level=messages.ERROR
-                            )
-                    user.projects.add(proj)
+                user.research_group.add(regroup)
+                for proj in Project.objects.exclude(name__in=["EXTERNAL"]):
+                    if vals[header.index(proj.name.lower())] == "TRUE":
+                        user.projects.add(proj)
                 user.save()
-            self.message_user(request, "Your csv file has been importeds")
+                mail_text = f"Dear {user.first_name} {user.last_name},\na new account on EUROMAMMALS website was created for you.\n"
+                mail_text += f"Your username is {user.username} and password {header.index('password')}.\n"
+                mail_text += f"You can login here https://euromammals.org/accounts/login/ \n"
+                mail_text += f"Please change password as soon as possible at this link https://euromammals.org/accounts/password_change/ \n"
+                mail_text += "Kind regards"
+                try:
+                    sentmail = send_mail("Registration to EUROMAMMALS website", mail_text, None, [user.email])
+                except Exception as err:
+                    self.message_user(
+                        request,
+                        f"Not able to send email to {user.username}: {err}",
+                        level=messages.WARNING
+                    )
+                    errors += 1
+                if sentmail == 0:
+                    self.message_user(
+                        request,
+                        f"Not able to send email to {user.username}",
+                        level=messages.WARNING
+                    )
+                    errors += 1
+            if errors == 0:
+                self.message_user(request, "Your csv file has been imported correctly")
+            else:
+                self.message_user(request, f"Your csv file has been imported but {errors} failed")
             return redirect("..")
         form = UserImportForm()
         payload = {"form": form}
@@ -150,3 +169,4 @@ admin.site.register(User, CustomUserAdmin)
 admin.site.register(Project, CSVAdmin)
 admin.site.register(Organization, CSVAdmin)
 admin.site.register(ResearchGroup, CSVAdmin)
+admin.site.register(ResearchGroupProject, CSVAdmin)

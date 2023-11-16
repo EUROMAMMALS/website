@@ -52,7 +52,7 @@ class Project(models.Model):
 class Organization(models.Model):
     """This table is useful to save info about organizations """
     name = models.CharField(max_length=255)
-    shortname = models.CharField(max_length=15)
+    shortname = models.CharField(max_length=25)
     address = models.CharField(max_length=250, null=True, blank=True)
     city = models.CharField(max_length=250, null=True, blank=True)
     country = models.ForeignKey(
@@ -90,12 +90,12 @@ class Organization(models.Model):
 class ResearchGroup(models.Model):
     """"""
     name = models.CharField(max_length=255)
-    shortname = models.CharField(max_length=15)
+    shortname = models.CharField(max_length=25)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
-    year_joined = models.IntegerField()
     email = models.EmailField(null=True, blank=True)
     website = models.URLField(max_length=150, null=True, blank=True)
     image = models.ImageField(upload_to="logo/organizations/", null=True, blank=True)
+    projects = models.ManyToManyField(Project, through='ResearchGroupProject')
     geom = models.PointField(
         srid=4326,
         null=True,
@@ -125,14 +125,18 @@ class ResearchGroup(models.Model):
     def natural_key(self):
         return self.__unicode__()
 
+class ResearchGroupProject(models.Model):
+    researchgroup = models.ForeignKey(ResearchGroup, on_delete=models.PROTECT)
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    year = models.IntegerField()
+    contact_people = models.TextField()
+
 class User(AbstractUser):
     """Extent the abstract user class"""
 
     bio = models.TextField(max_length=500, null=True, blank=True)
     image = models.ImageField(upload_to="users/", null=True, blank=True)
     #TODO could a person be connected with more then one group?
-    research_group = models.ForeignKey(
-        ResearchGroup, on_delete=models.PROTECT, null=True, blank=True
-    )
+    research_group = models.ManyToManyField(ResearchGroup)
     projects = models.ManyToManyField(Project)
     euromammals_username = models.TextField(max_length=500, null=True, blank=True)
