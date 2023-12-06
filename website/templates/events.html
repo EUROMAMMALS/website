@@ -3,6 +3,7 @@
 {% load static %}
 
 {% block content %}
+{% now "Y-m-d" as today %}
 {% for key, vals in items.items %}
     {% if vals|length > 0 %}
     <h3 class="pt-3 text-center">{{ key }}</h3>
@@ -37,6 +38,13 @@
                         {{ item.start|date:'Y-m-d' }}
                         {% endif %}
                         </p>
+                        {% if item.registration_until %}
+                        {% if today <= item.registration_until|date:"Y-m-d" %}
+                        {% if item.registration_public or request.user.is_authenticated %}
+                        <a href="{{ item.registration_link }}" target="_blank" class="btn btn-primary">{% trans "Register here" %}</a>
+                        {% endif %}
+                        {% endif %}
+                        {% endif %}
                         {% if item.descr %}
                         <p>{{ item.descr }}</p>
                         {% endif %}

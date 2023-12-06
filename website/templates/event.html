@@ -30,10 +30,11 @@
         {% endif %}
         <div class="row">
             <div class="col-12 mx-auto text-center">
+                This
                 {% if item.typ %}
-                {{ item.get_typ_display }}
+                {{ item.get_typ_display|lower }}
                 {% else %}
-                This event
+                event
                 {% endif %}
                 {% if item.project %}
                 is related to {{ item.project }}
@@ -46,7 +47,7 @@
 <hr>
 {% now "Y-m-d" as today %}
 {% if item.registration_until %}
-{% if item.registration_until|date:"Y-m-d" < today %}
+{% if today <= item.registration_until|date:"Y-m-d" %}
 <section class="p-5 section-angle top-right bottom-right" id="section-contact">
     <div class="container">
         <div class="row">

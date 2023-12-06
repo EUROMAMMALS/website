@@ -32,6 +32,10 @@ class Event(models.Model):
     image_link = models.URLField(null=True, blank=True)
     registration_link = models.URLField(null=True, blank=True)
     registration_until = models.DateTimeField(null=True, blank=True)
+    registration_public = models.BooleanField(
+        default=False,
+        help_text=_("If true the registration link is public to everyones")
+    )
     managers = models.ManyToManyField(User, blank=True)
     program_link = models.URLField(null=True, blank=True)
     # TODO think if it could be useful

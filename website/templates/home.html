@@ -224,6 +224,7 @@
 </section>
 
 {% if events|length > 0 %}
+{% now "Y-m-d" as today %}
 <!--events section-->
 <section class="p-5 section-angle top-right bottom-right" id="contacts_button">
     <div class="container">
@@ -237,6 +238,13 @@
             {% for event in events %}
             <div class="col-md-12 mx-auto text-center pt-3">
                 {{ event }}
+                {% if event.registration_until %}
+                {% if today <= event.registration_until|date:"Y-m-d" %}
+                {% if event.registration_public or request.user.is_authenticated %}
+                <a href="{{ event.registration_link }}" target="_blank" class="btn btn-primary">{% trans "Register here" %}</a>
+                {% endif %}
+                {% endif %}
+                {% endif %}
             </div>
             {% endfor %}
         </div>
