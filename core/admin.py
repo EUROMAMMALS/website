@@ -118,7 +118,7 @@ class CustomUserAdmin(UserAdmin):
                         user.projects.add(proj)
                 user.save()
                 mail_text = f"Dear {user.first_name} {user.last_name},\na new account on EUROMAMMALS website was created for you.\n"
-                mail_text += f"Your username is {user.username} and password {header.index('password')}.\n"
+                mail_text += f"Your username is {user.username} and password {vals[header.index('password')]}.\n"
                 mail_text += f"You can login here https://euromammals.org/accounts/login/ \n"
                 mail_text += f"Please change password as soon as possible at this link https://euromammals.org/accounts/password_change/ \n"
                 mail_text += "Kind regards"
