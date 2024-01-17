@@ -13,8 +13,10 @@
         {% endif %}
     {% endif %}
     {% if euromammalsurl %}
-        {% if key == "EUROCAM" or key == "EUROMAMMALS" %}
+        {% if key == "EUROMAMMALS" %}
         <p>See the status of inter-network pagers and leave your comments <a href="{{ euromammalsurl }}">here</a></p>
+        {% elif key == "EUROCAM" %}
+        <p>For the status of pagers, please see and leave your comments <a href="{{ euromammalsurl }}">here</a></p>
         {% endif %}
     {% endif %}
     {% endif %}
