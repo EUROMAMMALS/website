@@ -8,7 +8,8 @@ class Pager(models.Model):
     date = models.DateField(null=True, blank=True)
     version = models.IntegerField(null=True, blank=True)
     link = models.URLField()
-    external_participant_link = models.URLField(null=True, blank=True)
+    participant_link = models.URLField(null=True, blank=True)
+    external_link = models.URLField(null=True, blank=True)
     active = models.BooleanField(null=True, blank=True)
     project = models.ManyToManyField(Project)
 

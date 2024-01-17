@@ -42,9 +42,13 @@
                 <br>
                 {% endif %}
                 <a href="{{item.link}}" target="_blank"><b>Go to the pager</b></a>
-                {% if item.external_participant_link %}
+                {% if item.participant_link %}
                 <br>
-                <a href="{{item.external_participant_link}}" target="_blank"><b>See the participant list</b></a>
+                <a href="{{item.participant_link}}" target="_blank"><b>See the participant's list</b></a>
+                {% endif %}
+                {% if item.external_link %}
+                <br>
+                <a href="{{item.external_link}}" target="_blank"><b>More info</b></a>
                 {% endif %}
             </div>
         </div>
