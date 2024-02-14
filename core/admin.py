@@ -169,7 +169,7 @@ class CustomUserAdmin(UserAdmin):
 
     def get_search_results(self, request, queryset, search_term):
         orig_queryset = queryset
-        queryset, use_distinct = super(CSVAdmin, self).get_search_results(
+        queryset, use_distinct = super(CustomUserAdmin, self).get_search_results(
                                                request, queryset, search_term)
         search_words = search_term.split()
         if search_words:
@@ -192,6 +192,6 @@ class OrganizationAdmin(CSVAdmin):
 
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Project, CSVAdmin)
-admin.site.register(Organization, CSVAdmin)
+admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(ResearchGroup, ResearchGroupAdmin)
 admin.site.register(ResearchGroupProject, CSVAdmin)
