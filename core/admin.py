@@ -1,4 +1,6 @@
 import os
+from functools import reduce
+from operator import or_
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib import messages
@@ -10,6 +12,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseNotFound
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db.models import Q
 
 # Register your models here.
 from euromammals.functions_admin import CSVAdmin
@@ -47,7 +50,7 @@ class CustomUserAdmin(UserAdmin):
             )}
         ),
     )
-    search_fields = ("email",)
+    search_fields = ("username", "email",)
     ordering = ("last_name", "first_name",)
 
     change_list_template = "admin/import_csv.html"
@@ -164,9 +167,31 @@ class CustomUserAdmin(UserAdmin):
         output['Content-Disposition'] = f'attachment; filename={table}.csv'
         return output
 
+    def get_search_results(self, request, queryset, search_term):
+        orig_queryset = queryset
+        queryset, use_distinct = super(CSVAdmin, self).get_search_results(
+                                               request, queryset, search_term)
+        search_words = search_term.split()
+        if search_words:
+            q_objects = [Q(**{field + '__icontains': word})
+                                for field in self.search_fields
+                                for word in search_words]
+            queryset |= self.model.objects.filter(reduce(or_, q_objects))
+
+        queryset = queryset & orig_queryset
+        return queryset, use_distinct
+
+
+class ResearchGroupAdmin(CSVAdmin):
+    search_fields = ("name", "organization__name")
+
+
+class OrganizationAdmin(CSVAdmin):
+    search_fields = ("name",)
+
 
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Project, CSVAdmin)
 admin.site.register(Organization, CSVAdmin)
-admin.site.register(ResearchGroup, CSVAdmin)
+admin.site.register(ResearchGroup, ResearchGroupAdmin)
 admin.site.register(ResearchGroupProject, CSVAdmin)

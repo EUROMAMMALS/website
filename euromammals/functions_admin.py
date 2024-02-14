@@ -1,4 +1,6 @@
 import os
+from functools import reduce
+from operator import or_
 from django.forms import Form
 from django.forms import FileField
 from django.forms import CharField
@@ -11,6 +13,8 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.conf import settings
 from django.contrib.staticfiles import finders
+from django.db.models import Q
+
 
 from .functions import read_csv
 
@@ -93,3 +97,17 @@ class CSVAdmin(admin.ModelAdmin):
         output = HttpResponse(data, content_type='text/csv')
         output['Content-Disposition'] = f'attachment; filename={table}.csv'
         return output
+
+    def get_search_results(self, request, queryset, search_term):
+        orig_queryset = queryset
+        queryset, use_distinct = super(CSVAdmin, self).get_search_results(
+                                               request, queryset, search_term)
+        search_words = search_term.split()
+        if search_words:
+            q_objects = [Q(**{field + '__icontains': word})
+                                for field in self.search_fields
+                                for word in search_words]
+            queryset |= self.model.objects.filter(reduce(or_, q_objects))
+
+        queryset = queryset & orig_queryset
+        return queryset, use_distinct
