@@ -10,7 +10,7 @@ class Pager(models.Model):
     link = models.URLField()
     participant_link = models.URLField(null=True, blank=True)
     external_link = models.URLField(null=True, blank=True)
-    active = models.BooleanField(null=True, blank=True)
+    active = models.BooleanField(default=True, null=True, blank=True)
     project = models.ManyToManyField(Project)
 
     class Meta:

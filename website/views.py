@@ -146,6 +146,9 @@ def pagers(request):
     all_projs = list(chain(user_projs, extproj, mamproj, eurocam))
     mypagers = Pager.objects.filter(project__in=all_projs).distinct()
     outputs = {}
+    all = request.GET.get("all", None)
+    if not all:
+        mypagers = mypagers.filter(active=True)
     for proj in all_projs:
         outputs[str(proj)] = {"pagers": mypagers.filter(project=proj), "url": proj.pager_status}
     return render(

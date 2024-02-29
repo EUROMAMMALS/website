@@ -54,4 +54,26 @@
     {% endfor %}
 
 {% endfor %}
+<div id="showButton" class="pt-5"></div>
+{% endblock %}
+
+{% block extra_script %}
+    <script>
+        $(function() {
+            const urlObj = new URL(window.location.href);
+            var url = urlObj.href;
+            var all = urlObj.searchParams.get('all');
+            if (all == "true") {
+                newurl = url.split("?")[0]
+                $("#showButton").text("");
+                $("#showButton").append('<a class="btn btn-primary" href="' + newurl +'">Show only active pagers</a>');
+            } else {
+                newurl = url + "?all=true";
+                $("#showButton").text("");
+                $("#showButton").append('<a class="btn btn-primary" href="' + newurl +'">Show also not active pagers</a>');
+            }
+        });
+
+    </script>
+
 {% endblock %}
