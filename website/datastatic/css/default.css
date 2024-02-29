@@ -8,6 +8,10 @@
     background-size: cover;
 }
 
+.fixed-top {
+    width: 100vw;
+}
+
 footer {
     min-height: 30vh;
 }
