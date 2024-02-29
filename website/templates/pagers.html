@@ -8,15 +8,13 @@
     {% if vals.pagers|length > 0 %}
     <h3 class="pt-3 text-center">{{ key }}</h3>
     {% if vals.url %}
-        {% if key != "EUROCAM" and key != "EUROMAMMALS" %}
+        {% if key != "EUROMAMMALS" %}
         <p>For the status of pagers, please see and leave your comments <a href="{{ vals.url }}" target="_blank">here</a></p>
         {% endif %}
     {% endif %}
     {% if euromammalsurl %}
         {% if key == "EUROMAMMALS" %}
         <p>See the status of inter-network pagers and leave your comments <a href="{{ euromammalsurl }}">here</a></p>
-        {% elif key == "EUROCAM" %}
-        <p>For the status of pagers, please see and leave your comments <a href="{{ euromammalsurl }}">here</a></p>
         {% endif %}
     {% endif %}
     {% endif %}
