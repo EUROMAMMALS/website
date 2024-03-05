@@ -245,6 +245,11 @@
                 {% endif %}
                 {% endif %}
                 {% endif %}
+                {% if item.program_link %}
+                {% if item.program_public or request.user.is_authenticated %}
+                <a href="{{ item.program_link }}" target="_blank" class="btn btn-primary">{% trans "Program here" %}</a>
+                {% endif %}
+                {% endif %}
             </div>
             {% endfor %}
         </div>

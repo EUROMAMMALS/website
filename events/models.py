@@ -38,6 +38,10 @@ class Event(models.Model):
     )
     managers = models.ManyToManyField(User, blank=True)
     program_link = models.URLField(null=True, blank=True)
+    program_public = models.BooleanField(
+        default=False,
+        help_text=_("If true the program link is public to everyones")
+    )
     # TODO think if it could be useful
     # logistic_link = models.URLField(null=True, blank=True)
 
