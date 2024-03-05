@@ -23,7 +23,8 @@ class Event(models.Model):
     typ = models.CharField(max_length=2, choices=EVENT_TYPE,
                            blank=True, null=True)
     venue = models.CharField(max_length=255, null=True, blank=True)
-    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    project = models.ForeignKey(Project, on_delete=models.PROTECT, related_name='project')
+    projects = models.ManyToManyField(Project, related_name='projects')
     as_participant = models.BooleanField(null=True, blank=True)
     # privato
     main_slide_link = models.URLField(null=True, blank=True)

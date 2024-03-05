@@ -75,7 +75,7 @@ def events(request):
     projs = Project.objects.all()
     outputs = {}
     for proj in projs:
-        outputs[proj] = myevents.filter(project=proj)
+        outputs[proj] = myevents.filter(projects=proj)
     return render(request, template_name="events.html", context={"items": outputs})
 
 
