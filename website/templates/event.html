@@ -36,9 +36,10 @@
                 {% else %}
                 event
                 {% endif %}
-                {% if item.project %}
-                is related to {{ item.project }}
-                {% endif %}
+                is related to
+                {% for proj in item.projects.all %}
+                 {{ proj }}
+                {% endfor %}
             </div>
         </div>
     </div>
