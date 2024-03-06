@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load static %}
+{% load filters %}
 
 {% block content %}
 {% now "Y-m-d" as today %}
-{% for key, vals in items.items %}
+{% for key in PROJECTS_ORDER_LIST %}
+    {% with vals=items|getattribute:key %}
     {% if vals|length > 0 %}
     <h3 class="pt-3 text-center">{{ key }}</h3>
     <div class="row">
@@ -61,5 +63,6 @@
     {% if vals|length > 0 %}
     </div>
     {% endif %}
+    {% endwith %}
 {% endfor %}
 {% endblock %}

@@ -27,10 +27,15 @@ def getattribute(value, arg):
     if value is None or arg is None:
         return ""
     if isinstance(value, dict):
-        val = value[arg]
-        if val is None:
+        try:
+            val = value[arg]
+            if val is None:
+                return ""
+            return val
+        except KeyError:
             return ""
-        return val
+        except TypeError:
+            return ""
     try:
         val = value.__dict__[arg]
         if val is None:

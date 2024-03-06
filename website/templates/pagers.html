@@ -12,7 +12,9 @@ This paper was conceived and written within the EUROMAMMALS/EURO’X’ collabor
 <br><br>
 Thanks for thinking EUROMAMMALS!
 
-{% for key, vals in items.items %}
+{% for key in PROJECTS_ORDER_LIST %}
+    {% with vals=items|getattribute:key %}
+    {% if vals != "" %}
     {% if vals.pagers|length > 0 %}
     <h3 class="pt-3 text-center">{{ key }}</h3>
     {% if vals.url %}
@@ -60,7 +62,8 @@ Thanks for thinking EUROMAMMALS!
         </div>
     </div>
     {% endfor %}
-
+    {% endif %}
+    {% endwith %}
 {% endfor %}
 <div id="showButton" class="pt-5"></div>
 {% endblock %}
