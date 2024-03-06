@@ -75,7 +75,7 @@ def events(request):
     projs = Project.objects.all()
     outputs = {}
     for proj in projs:
-        outputs[proj] = myevents.filter(projects=proj)
+        outputs[str(proj)] = myevents.filter(projects=proj)
     return render(request, template_name="events.html", context={"items": outputs})
 
 
@@ -115,7 +115,7 @@ def project(request, projct):
         proj_termofuse = None
     pubs = Publication.objects.filter(project=proj)
     extpub = PublicationExternal.objects.filter(project=proj)
-    events = Event.objects.filter(project=proj).filter(~Q(as_participant=True))
+    events = Event.objects.filter(projects=proj).filter(~Q(as_participant=True))
     participants = EventExternal.objects.filter(project=proj)
     return render(
         request,
