@@ -35,6 +35,9 @@ def contact_view(request):
         if form.is_valid():
             #form.save()
             tolist = ["euromammals@fmach.it"]
+            form_email = form.cleaned_data['from_email']
+            if form_email:
+                tolist.append(form_email)
             for idstr in form.cleaned_data["project"]:
                 try:
                     proj = Project.objects.get(id=int(idstr))
@@ -42,7 +45,7 @@ def contact_view(request):
                 except Project.DoesNotExist:
                     pass
             email_subject = form.cleaned_data["subject"]
-            email_message = f"FROM: {form.cleaned_data['contact_name']}\nEMAIL: {form.cleaned_data['from_email']}\nMESSAGE: {form.cleaned_data['message']}"
+            email_message = f"FROM: {form.cleaned_data['contact_name']}\nEMAIL: {form_email}\nMESSAGE: {form.cleaned_data['message']}"
             if send_mail(email_subject, email_message, settings.EMAIL_HOST_USER, tolist):
                 return render(request, 'email_sent.html')
             else:

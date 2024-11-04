@@ -30,6 +30,7 @@ class Event(models.Model):
     folder_slides_link = models.URLField(null=True, blank=True)
     report_link = models.URLField(null=True, blank=True)
     image_link = models.URLField(null=True, blank=True)
+    folder_image_link = models.URLField(null=True, blank=True)
     registration_link = models.URLField(null=True, blank=True)
     registration_until = models.DateTimeField(null=True, blank=True)
     registration_public = models.BooleanField(

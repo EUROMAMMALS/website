@@ -68,30 +68,37 @@
         <div class="row">
             {% if item.main_slide_link %}
             <div class="col-md-4 mx-auto text-center">
-            {% trans "If you look for the main slides" %}
-            <br>
-            <a href="{{ item.main_slide_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Download here" %}</a>
+                {% trans "If you look for the main slides" %}
+                <br>
+                <a href="{{ item.main_slide_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Download here" %}</a>
             </div>
             {% endif %}
             {% if item.folder_slides_link %}
             <div class="col-md-4 mx-auto text-center">
-            {% trans "If you look for all the other slides " %}
-            <br>
-            <a href="{{ item.folder_slides_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Download here" %}</a>
+                {% trans "If you look for all the other slides" %}
+                <br>
+                <a href="{{ item.folder_slides_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Download here" %}</a>
             </div>
             {% endif %}
             {% if item.report_link %}
             <div class="col-md-4 mx-auto text-center">
-            {% trans "If you look for the report " %}
-            <br>
-            <a href="{{ item.report_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Download here" %}</a>
+                {% trans "If you look for the report" %}
+                <br>
+                <a href="{{ item.report_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Download here" %}</a>
             </div>
             {% endif %}
             {% if item.program_link %}
             <div class="col-md-4 mx-auto text-center">
-            {% trans "If you look for the main program " %}
-            <br>
-            <a href="{{ item.program_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Download here" %}</a>
+                {% trans "If you look for the main program" %}
+                <br>
+                <a href="{{ item.program_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Download here" %}</a>
+            </div>
+            {% endif %}
+            {% if item.folder_image_link %}
+            <div class="col-md-4 mx-auto text-center">
+                {% trans "You can see pictures from the event" %}
+                <br>
+                <a href="{{ item.folder_image_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "See here" %}</a>
             </div>
             {% endif %}
         </div>
