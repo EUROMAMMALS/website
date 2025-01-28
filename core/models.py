@@ -126,22 +126,6 @@ class ResearchGroup(models.Model):
         return self.__unicode__()
 
 
-class ResearchGroupProject(models.Model):
-    researchgroup = models.ForeignKey(ResearchGroup, on_delete=models.PROTECT)
-    project = models.ForeignKey(Project, on_delete=models.PROTECT)
-    year = models.IntegerField()
-    contact_people = models.TextField()
-
-    class Meta:
-        ordering = ["researchgroup", "project"]
-
-    def __str__(self):
-        return f"{self.researchgroup} {self.project} {self.year}"
-
-    def natural_key(self):
-        return self.__unicode__()
-
-
 class User(AbstractUser):
     """Extent the abstract user class"""
 
@@ -151,3 +135,22 @@ class User(AbstractUser):
     research_group = models.ManyToManyField(ResearchGroup)
     projects = models.ManyToManyField(Project)
     euromammals_username = models.TextField(max_length=500, null=True, blank=True)
+    note = models.TextField(max_length=500, null=True, blank=True)
+
+
+class ResearchGroupProject(models.Model):
+    researchgroup = models.ForeignKey(ResearchGroup, on_delete=models.PROTECT)
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    year = models.IntegerField()
+    contact_people = models.TextField()
+    contact_user = models.ManyToManyField(User, null=True, blank=True)
+    term_of_use = models.URLField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["researchgroup", "project"]
+
+    def __str__(self):
+        return f"{self.researchgroup} {self.project} {self.year}"
+
+    def natural_key(self):
+        return self.__unicode__()
