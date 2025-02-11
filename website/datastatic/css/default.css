@@ -23,3 +23,13 @@ footer {
 ul.nobull {
     list-style-type: none;
 }
+
+.text-right {
+    float: right;
+}
+
+.scrollable {
+    max-height: 400px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}

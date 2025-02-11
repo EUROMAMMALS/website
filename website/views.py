@@ -1,4 +1,5 @@
 import os
+import csv
 import json
 from datetime import date
 from itertools import chain
@@ -7,9 +8,10 @@ from django.shortcuts import render
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Q
-from django.contrib.auth.decorators import login_required
-
-from core.models import Project
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.http import HttpResponse
+from core.models import Project, ResearchGroupProject
+from euromammals.functions import is_datacurator
 from events.models import Event
 from events.models import EventExternal
 from publications.models import Publication
@@ -172,3 +174,27 @@ def mailing(request):
     for proj in user_projs:
         outputs[str(proj)] = proj.mailing_list
     return render(request, template_name="mailing.html", context={"items": outputs})
+
+@user_passes_test(is_datacurator)
+def term_of_use(request):
+    """Function to return a table with all the information about research groups with their term of use"""
+    data = ResearchGroupProject.objects.all()
+    format = request.GET.get("format", None)
+    if format == "csv":
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="term_of_use.csv"'
+        writer = csv.writer(response)
+        writer.writerow(["Research Group", "Project", "Year", "Contact People", "Contact User", "Term of Use"])
+        for item in data:
+            writer.writerow(
+                [
+                    item.researchgroup,
+                    item.project,
+                    item.year,
+                    item.contact_people,
+                    item.contact_user if item.contact_user else "",
+                    item.term_of_use
+                ]
+            )
+        return response
+    return render(request, template_name="term_of_use.html", context={"items": data})

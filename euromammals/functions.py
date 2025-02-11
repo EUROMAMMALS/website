@@ -42,6 +42,18 @@ from django.core.files import File
 TMPDIR = tempfile.gettempdir()
 
 
+def is_datacurator(user):
+    superuser = bool(user.is_superuser)
+    if superuser:
+        return True
+    superuser = bool(
+        "Superdatacurator" in user.groups.values_list("name", flat=True)
+    )
+    if superuser:
+        return True
+    return False
+
+
 def change_mutable(request, key, val):
     """Function to change the data of a request"""
     _mutable = request.data._mutable

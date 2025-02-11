@@ -137,6 +137,25 @@ class User(AbstractUser):
     euromammals_username = models.TextField(max_length=500, null=True, blank=True)
     note = models.TextField(max_length=500, null=True, blank=True)
 
+    class Meta:
+        ordering = ["last_name", "first_name"]
+
+    def __unicode__(self):
+        return smart_str(f"{self.first_name} {self.last_name}")
+
+    def __str__(self):
+        return self.__unicode__()
+
+    def natural_key(self):
+        return self.__unicode__()
+
+    @property
+    def is_datacurator(self):
+        result = self.groups.filter(name__in='Datacurator, Superdatacurator').exists()
+        if not result:
+            result = self.is_superuser
+        return result
+
 
 class ResearchGroupProject(models.Model):
     researchgroup = models.ForeignKey(ResearchGroup, on_delete=models.PROTECT)

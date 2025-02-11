@@ -53,6 +53,7 @@ urlpatterns = [
     path('jsi18n/', JavaScriptCatalog.as_view(), js_info_dict,
          name='javascript_catalog'),
     path('captcha/', include('captcha.urls')),
+    path("termofuse/", wviews.term_of_use),
 ] + static(settings.STATIC_URL,
            document_root=settings.STATIC_ROOT)
 

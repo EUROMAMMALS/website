@@ -21,6 +21,7 @@
 
     <!-- Bootstrap CSS / Color Scheme -->
     <link rel="stylesheet" href="{% static 'css/default.css' %}" id="theme-color">
+    <link rel="stylesheet" href="{% static 'datatables/datatables.min.css' %}">
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -70,7 +71,7 @@
             {% if request.user.is_authenticated %}
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="dropdownprivate" data-bs-toggle="dropdown" aria-expanded="false">{% trans "Private pages" %}</a>
-                <ul class="dropdown-menu text-end" aria-labelledby="dropdownprivate">
+                <ul class="dropdown-menu text-end scrollable" aria-labelledby="dropdownprivate">
                     <li><a class="dropdown-item" href="/pagers">Pagers</a></li>
                     <li><a class="dropdown-item" href="/mailinglists">Mailing lists</a></li>
                     {% for proj in request.user.projects.all %}
@@ -84,6 +85,9 @@
                     <li><a class="dropdown-item" href="/accounts/password_change/">Change password</a></li>
                     {% if request.user.is_staff %}
                     <li><a class="dropdown-item" href="/mammalsadmin">Admin</a></li>
+                    {% endif %}
+                    {% if request.user.is_datacurator %}
+                    <li><a class="dropdown-item" href="/termofuse/">Research groups term of use</a></li>
                     {% endif %}
                 </ul>
             </li>
@@ -215,6 +219,7 @@
     {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.7.3/feather.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script> {% endcomment %}
+    <script src="{% static 'datatables/datatables.min.js' %}"></script>
     <script src="{% static 'js/scripts.js' %}"></script>
     {% block extra_script %}{% endblock %}
 </body>
