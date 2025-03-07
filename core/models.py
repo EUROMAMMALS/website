@@ -96,7 +96,7 @@ class ResearchGroup(models.Model):
     email = models.EmailField(null=True, blank=True)
     website = models.URLField(max_length=150, null=True, blank=True)
     image = models.ImageField(upload_to="logo/organizations/", null=True, blank=True)
-    projects = models.ManyToManyField(Project, through='ResearchGroupProject')
+    projects = models.ManyToManyField(Project, through="ResearchGroupProject")
     geom = models.PointField(
         srid=4326,
         null=True,
@@ -152,18 +152,22 @@ class User(AbstractUser):
 
     @property
     def is_datacurator(self):
-        result = self.groups.filter(name__in='Datacurator, Superdatacurator').exists()
+        result = self.groups.filter(name__in="Datacurator, Superdatacurator").exists()
         if not result:
             result = self.is_superuser
         return result
 
-    @admin.display(description='Research Groups')
+    @admin.display(description="Research Groups")
     def research_group_list(self):
-        return ', '.join([research_group.name for research_group in self.research_group.all()])
+        return ", ".join([research_group.name for research_group in self.research_group.all()])
 
-    @admin.display(description='Projects')
+    @admin.display(description="Projects")
     def projects_list(self):
-        return ', '.join([project.name for project in self.projects.all()])
+        return ", ".join([project.name for project in self.projects.all()])
+
+    @admin.display(description="Organizations")
+    def organizations_list(self):
+        return ", ".join([research_group.organization.name for research_group in self.research_group.all()])
 
 
 class ResearchGroupProject(models.Model):
@@ -182,3 +186,11 @@ class ResearchGroupProject(models.Model):
 
     def natural_key(self):
         return self.__unicode__()
+
+    @admin.display(description="Contact People")
+    def contact_user_list(self):
+        return ", ".join([user.__str__() for user in self.contact_user.all()])
+
+    @admin.display(description="Organization")
+    def organization_name(self):
+        return self.researchgroup.organization.name

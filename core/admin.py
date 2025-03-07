@@ -13,6 +13,7 @@ from django.http import HttpResponseNotFound
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Q
+from django.contrib.admin import SimpleListFilter
 
 # Register your models here.
 from euromammals.functions_admin import CSVAdmin
@@ -30,12 +31,27 @@ from .forms import CustomUserChangeForm
 from .forms import UserImportForm
 
 
+class OrgaFilter(SimpleListFilter):
+    """Filter to filter with start_end date"""
+
+    title = "Organization"
+    parameter_name = "organization"
+
+    def lookups(self, request, model_admin):
+        return [(org.id, org.name) for org in Organization.objects.all()]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(researchgroup__organization=self.value())
+        return queryset
+
+
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = User
-    list_display = ("username", "email", "first_name", "last_name", "research_group_list", "projects_list", "euromammals_username")#"is_staff",)
-    list_filter = ("is_staff", "is_superuser", "is_active", "groups", "projects")
+    list_display = ("username", "email", "first_name", "last_name", "research_group_list", "organizations_list", "projects_list", "euromammals_username")#"is_staff",)
+    list_filter = ("is_staff", "is_superuser", "is_active", "groups", "projects", "research_group", "research_group__organization")
     fieldsets = (
         (None, {"fields": ("email", "password", "first_name", "last_name")}),
         ("Personal info", {"fields": ["bio", "research_group", "projects", "image", "euromammals_username", "note",]}),
@@ -186,6 +202,10 @@ class CustomUserAdmin(UserAdmin):
 class ResearchGroupAdmin(CSVAdmin):
     search_fields = ("name", "organization__name")
 
+class ResearchGroupProjectAdmin(CSVAdmin):
+    list_display = ("researchgroup", "organization_name", "project", "contact_user_list", "year", "term_of_use")
+    list_filter = ("project", "researchgroup", OrgaFilter)
+
 
 class OrganizationAdmin(CSVAdmin):
     search_fields = ("name",)
@@ -195,4 +215,4 @@ admin.site.register(User, CustomUserAdmin)
 admin.site.register(Project, CSVAdmin)
 admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(ResearchGroup, ResearchGroupAdmin)
-admin.site.register(ResearchGroupProject, CSVAdmin)
+admin.site.register(ResearchGroupProject, ResearchGroupProjectAdmin)
