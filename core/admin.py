@@ -34,10 +34,11 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = User
+    list_display = ("username", "email", "first_name", "last_name", "research_group_list", "projects_list", "euromammals_username")#"is_staff",)
     list_filter = ("is_staff", "is_superuser", "is_active", "groups", "projects")
     fieldsets = (
         (None, {"fields": ("email", "password", "first_name", "last_name")}),
-        ("Personal info", {"fields": ["bio", "research_group", "projects", "image"]}),
+        ("Personal info", {"fields": ["bio", "research_group", "projects", "image", "euromammals_username", "note",]}),
         ("Permissions", {"fields": ("is_staff", "is_active", "is_superuser", "groups", "user_permissions")}),
     )
     add_fieldsets = (
@@ -163,8 +164,8 @@ class CustomUserAdmin(UserAdmin):
             return HttpResponseNotFound(f"CSV file for model {self.model} not found")
         with open(csvpath) as csvfile:
             data = csvfile.read()
-        output = HttpResponse(data, content_type='text/csv')
-        output['Content-Disposition'] = f'attachment; filename={table}.csv'
+        output = HttpResponse(data, content_type="text/csv")
+        output["Content-Disposition"] = f"attachment; filename={table}.csv"
         return output
 
     def get_search_results(self, request, queryset, search_term):
@@ -173,7 +174,7 @@ class CustomUserAdmin(UserAdmin):
                                                request, queryset, search_term)
         search_words = search_term.split()
         if search_words:
-            q_objects = [Q(**{field + '__icontains': word})
+            q_objects = [Q(**{field + "__icontains": word})
                                 for field in self.search_fields
                                 for word in search_words]
             queryset |= self.model.objects.filter(reduce(or_, q_objects))

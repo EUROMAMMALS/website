@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.contrib import admin
 from django.contrib.auth.models import AbstractUser
 from django.utils.encoding import smart_str
 from django.utils.translation import gettext_lazy as _
@@ -134,7 +135,7 @@ class User(AbstractUser):
     #TODO could a person be connected with more then one group?
     research_group = models.ManyToManyField(ResearchGroup)
     projects = models.ManyToManyField(Project)
-    euromammals_username = models.TextField(max_length=500, null=True, blank=True)
+    euromammals_username = models.TextField(max_length=500, null=True, blank=True, help_text="The username of the user in the Euromammals database")
     note = models.TextField(max_length=500, null=True, blank=True)
 
     class Meta:
@@ -155,6 +156,14 @@ class User(AbstractUser):
         if not result:
             result = self.is_superuser
         return result
+
+    @admin.display(description='Research Groups')
+    def research_group_list(self):
+        return ', '.join([research_group.name for research_group in self.research_group.all()])
+
+    @admin.display(description='Projects')
+    def projects_list(self):
+        return ', '.join([project.name for project in self.projects.all()])
 
 
 class ResearchGroupProject(models.Model):
