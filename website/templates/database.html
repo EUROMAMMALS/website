@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+
+<section class="pt-6 pb-7" id="material">
+    <div class="container">
+        <h2>Database access</h2>
+        <div class="row mt-5">
+            <div class="col-md-10 mx-auto">
+                <p>There are two possibilities to access the database:</p>
+                <ul>
+                    <li>Via the web using phppgadmin at <a href="https://eurodeer2.fmach.it/phppgadmin/" target="_blank">https://eurodeer2.fmach.it/phppgadmin/</a></li>
+                    <li>Using a PostgreSQL client (like DBeaver, pgAdmin, R, Python); the parameters to use are:
+                        <ul>
+                            <li>Host: eurodeer2.fmach.it</li>
+                            <li>Port: 5432</li>
+                            <li>Database: DATABASE_YOU_WANT_USE</li>
+                            <li>User: YOUR_USER</li>
+                            <li>Password: YOUR_PASSWORD</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

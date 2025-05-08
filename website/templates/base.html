@@ -53,6 +53,11 @@
             {% comment %} <li class="nav-item">
                 <a class="nav-link" href="#">{% trans "Who we are" %}</a>
             </li> {% endcomment %}
+            {% if request.user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="/database/">{% trans "Database access" %}</a>
+            </li>
+            {% endif %}
             <li class="nav-item">
                 <a class="nav-link" href="/pubs/">{% trans "Publications" %}</a>
             </li>

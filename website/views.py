@@ -175,6 +175,15 @@ def mailing(request):
         outputs[str(proj)] = proj.mailing_list
     return render(request, template_name="mailing.html", context={"items": outputs})
 
+@login_required
+def database(request):
+    """Function to return database info
+
+    Args:
+        request (obj): the request object
+    """
+    return render(request, template_name="database.html")
+
 @user_passes_test(is_datacurator)
 def term_of_use(request):
     """Function to return a table with all the information about research groups with their term of use"""

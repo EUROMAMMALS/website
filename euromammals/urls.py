@@ -39,6 +39,7 @@ urlpatterns = [
     path("pagers/", wviews.pagers),
     path("pubs/", wviews.publications),
     path("education/", wviews.educational),
+    path("database/", wviews.database),
     path("euroboar/", wviews.project, {"projct": "EUROBOAR"}),
     path("eurolynx/", wviews.project, {"projct": "EUROLYNX"}),
     path("eurosmallmammals/", wviews.project, {"projct": "EUROSMALLMAMMALS"}),
