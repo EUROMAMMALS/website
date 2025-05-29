@@ -67,6 +67,25 @@
                 </div>
             </div>
         </div>
+        {% if proj == "eurowildcat" and termofuse %}
+        <div class="row mt-5">
+            {% for app in data.apps %}
+            <div class="col-md-10 mx-auto">
+                <div class="row text-muted">
+                    {{ app.descr|safe|linebreaks }}
+                    <div class="text-center">
+                    {% if "app/"|add:app.android|path_exists %}
+                    <a href="{% static 'app/'|add:app.android %}"><img src="{% static 'img/android.png' %}" width="250px" class="px-2"></a>
+                    {% endif %}
+                    {% if "app/"|add:app.ios|path_exists %}
+                    <a href="{% static 'app/'|add:app.ios %}"><img src="{% static 'img/ios.png' %}" width="250px"></a>
+                    {% endif %}
+                    </div
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
 </section>
 

@@ -105,6 +105,16 @@ def csv_exists(table):
         return f"{static}csv_template/{table}.csv"
     return f"{static}csv_template/simple.csv"
 
+@register.filter(name='path_exists')
+def path_exists(path):
+    """Check if CSV template exists otherwise return simple one"""
+    if not path:
+        return False
+    result = finders.find(path)
+    if result:
+        return True
+    return False
+
 @register.filter(name='allower')
 def allower(value):
     """Return all the text lowercase without underscore"""
