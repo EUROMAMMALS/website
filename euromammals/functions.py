@@ -5,19 +5,26 @@ Created on Tue Jul 12 12:35:34 2021
 
 @author: lucadelu
 """
+
 import os
 import urllib.request
 import tempfile
 import zipfile
 import random
+
 # import json
 import base64
+from isort import io
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 from PIL import Image
 from PIL import ExifTags
 from datetime import date
 from datetime import datetime
 from datetime import time
 from decimal import Decimal
+
 # from shapely.geometry import shape
 
 from django.db.models.fields import IntegerField
@@ -35,9 +42,18 @@ from django.contrib.gis.geos import MultiPoint
 from django.contrib.gis.geos import MultiLineString
 from django.contrib.gis.geos import MultiPolygon
 from django.core.files import File
+from django.conf import settings
+import psycopg2
+
 # from pyproj import CRS
 # from pyproj.aoi import AreaOfInterest
 # from pyproj.database import query_utm_crs_info
+
+from .sql_queries import QUERY_GPS_BOAR
+from .sql_queries import QUERY_GPS_BOAR_RESEARCH_GROUP
+from .sql_queries import QUERY_GPS_DEER_RESEARCH_GROUP
+from .sql_queries import SQL_QUERIES_LYNX
+from .sql_queries import QUERY_GPS_DEER
 
 TMPDIR = tempfile.gettempdir()
 
@@ -46,9 +62,7 @@ def is_datacurator(user):
     superuser = bool(user.is_superuser)
     if superuser:
         return True
-    superuser = bool(
-        "Superdatacurator" in user.groups.values_list("name", flat=True)
-    )
+    superuser = bool("Superdatacurator" in user.groups.values_list("name", flat=True))
     if superuser:
         return True
     return False
@@ -91,7 +105,7 @@ def get_int_value(field):
     """Function to return integer value"""
     try:
         val = int(field)
-    except:
+    except (ValueError, TypeError):
         val = None
     return val
 
@@ -100,7 +114,7 @@ def get_decimal_value(field):
     """Function to return integer value"""
     try:
         val = float(field)
-    except:
+    except (ValueError, TypeError):
         val = None
     return val
 
@@ -114,7 +128,7 @@ def get_datetime(field):
     except ValueError:
         try:
             dateobj = datetime.strptime(field, "%d/%m/%Y %H:%M")
-        except:
+        except ValueError:
             try:
                 if "." in field:
                     sfi = field.split(".")
@@ -123,7 +137,7 @@ def get_datetime(field):
                         if "Z" in sfi[1]:
                             field += "Z"
                 dateobj = datetime.strptime(field, "%Y-%m-%dT%H:%M:%S.%fZ")
-            except:
+            except (ValueError, IndexError):
                 raise ValueError("Date time format not supported")
     return dateobj
 
@@ -260,7 +274,7 @@ def read_csv(lines, model, sep="|", modify=False):
     for line in lines[1:]:
         try:
             vals = line.decode().strip().split(sep)
-        except:
+        except UnicodeDecodeError:
             vals = line.decode("latin2").strip().split(sep)
         if not vals:
             continue
@@ -270,7 +284,7 @@ def read_csv(lines, model, sep="|", modify=False):
         for i in range(len(vals)):
             try:
                 k = header[i]
-            except:
+            except Exception:
                 errs.append(
                     "list index {nu} out of range of header, please "
                     "check the csv file with text editor and check "
@@ -297,7 +311,9 @@ def read_csv(lines, model, sep="|", modify=False):
                         if item.isdigit():
                             key = fields[k].related_model.objects.filter(id__exact=item)
                         elif isinstance(item, str):
-                            key = fields[k].related_model.objects.filter(name__exact=item)
+                            key = fields[k].related_model.objects.filter(
+                                name__exact=item
+                            )
                         else:
                             key = []
                         if len(key) == 1:
@@ -408,8 +424,8 @@ class geo_mapping:
             url,
             data=None,
             headers={
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'
-            }
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"
+            },
         )
         with urllib.request.urlopen(req) as resp, open(fname, "wb") as ouf:
             data = resp.read()  # a `bytes` object
@@ -475,7 +491,7 @@ def imagetobase64(fip):
     """
     try:
         fil = open(fip, "rb")
-    except:
+    except OSError:
         return ""
     image = File(fil)
     data = base64.b64encode(image.read())
@@ -493,11 +509,12 @@ def exiffromimage(img):
         A dictionary with all EXIF
     """
     img = Image.open("img.jpg")
-    exif_data = img._getexif()
+    # exif_data = img._getexif()
     exif = {
         ExifTags.TAGS[k]: v for k, v in img._getexif().items() if k in ExifTags.TAGS
     }
     return exif
+
 
 def captcha_challenge():
     """Function to be used in the captcha for form
@@ -505,12 +522,157 @@ def captcha_challenge():
     Returns:
         list: a list with the value to show and the challenge
     """
-    challenge = u''
-    response = u''
+    challenge = ""
+    response = ""
     for i in range(4):
-        digit = random.randint(0,9)
+        digit = random.randint(0, 9)
         challenge += str(digit)
 
     response = str(int(challenge) + 1)
     print(challenge, response)
     return challenge, response
+
+
+def deployment_distribution_plot(dbname, output=None, research_group=False):
+    """Function to create the plot of distribution of deployments per year
+
+    Parameters:
+        dbname (str): name of the database to connect to
+        output (str): path to save the output plot
+
+    Returns:
+        list: a list with the value to show and the challenge
+    """
+
+    # Establish the psycopg2 connection
+    db_default = settings.DATABASES["default"]
+    try:
+        conn = psycopg2.connect(
+            host=db_default.get("HOST", "localhost"),
+            port=db_default.get("PORT", "5432"),
+            dbname=dbname,
+            user=db_default.get("USER", ""),
+            password=db_default.get("PASSWORD", ""),
+        )
+    except Exception as e:
+        print(f"Error connecting to database: {e}")
+        return False
+    if research_group:
+        if dbname in ("eurodeer_db", "eureddeer_db", "euroibex_db", "eurowildcat_db"):
+            QUERY_GPS = QUERY_GPS_DEER_RESEARCH_GROUP
+        elif dbname in ("euroboar_db"):
+            QUERY_GPS = QUERY_GPS_BOAR_RESEARCH_GROUP
+        elif dbname in ("eurolynx_db"):
+            QUERY_GPS = SQL_QUERIES_LYNX
+        else:
+            print(f"Database {dbname} not recognized for GPS query.")
+            return False
+    else:
+        if dbname in ("eurodeer_db", "eureddeer_db", "euroibex_db", "eurowildcat_db"):
+            QUERY_GPS = QUERY_GPS_DEER
+        elif dbname in ("euroboar_db"):
+            QUERY_GPS = QUERY_GPS_BOAR
+        else:
+            print(f"Database {dbname} not recognized for GPS query.")
+            return False
+    # Execute the query and fetch the data safely
+    with conn.cursor() as cursor:
+        cursor.execute(QUERY_GPS)
+        rows = cursor.fetchall()
+
+        # Extract column names from the cursor description
+        columns = [col[0] for col in cursor.description]
+
+    # Create the Pandas DataFrame and close the connection
+    gps_periods = pd.DataFrame(rows, columns=columns)
+    conn.close()
+
+    # Convert to datetime
+    gps_periods["gps_min_start_time"] = pd.to_datetime(
+        gps_periods["gps_min_start_time"]
+    )
+    gps_periods["gps_max_end_time"] = pd.to_datetime(gps_periods["gps_max_end_time"])
+
+    # Filter out NA rows
+    gps_periods = gps_periods.dropna(subset=["gps_min_start_time", "gps_max_end_time"])
+
+    # Create the label: study_name (n = n_animals)
+    gps_periods["study_label"] = (
+        np.where(
+            gps_periods["short_name"] != "",
+            gps_periods["short_name"],
+            gps_periods["study_name"],
+        )
+        + " (n = "
+        + gps_periods["n_animals"].astype(str)
+        + ")"
+    )
+
+    # Order the dataframe by gps_min_start_time so it plots properly
+    # (ascending=False ensures the earliest date is at the top of the
+    # y-axis in matplotlib)
+    gps_periods = gps_periods.sort_values(by="gps_min_start_time", ascending=False)
+
+    # Plotting ---
+    fig, ax = plt.subplots(figsize=(12, 8))
+
+    ax.hlines(
+        y=gps_periods["study_label"],
+        xmin=gps_periods["gps_min_start_time"],
+        xmax=gps_periods["gps_max_end_time"],
+        linewidth=2,
+        color="blue",
+    )
+
+    ax.plot(
+        gps_periods["gps_min_start_time"],
+        gps_periods["study_label"],
+        "o",
+        color="blue",
+        markersize=5,
+    )
+
+    ax.plot(
+        gps_periods["gps_max_end_time"],
+        gps_periods["study_label"],
+        "o",
+        color="blue",
+        markersize=5,
+    )
+
+    if research_group:
+        title = "GPS Data Availability Periods by Research Group"
+        figtext = "Each bar represents the period between the first GPS start time and the last GPS end time for each research group"
+        ax.set_ylabel("Research group")
+    else:
+        title = "GPS Data Availability Periods by Study Area"
+        figtext = "Each bar represents the period between the first GPS start time and the last GPS end time for each study area"
+        ax.set_ylabel("Study area")
+    ax.set_title(title, fontweight="bold", pad=15)
+    ax.set_xlabel("GPS data period")
+
+    fig.text(
+        0.5,
+        0.01,
+        figtext,
+        ha="center",
+        fontsize=9,
+        color="dimgray",
+    )
+
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_visible(False)
+    ax.grid(axis="x", linestyle="-", alpha=0.3)
+    ax.tick_params(axis="y", labelsize=9, length=0)
+
+    plt.tight_layout(rect=[0, 0.03, 1, 1])
+    if output is None:
+        iobytes = io.BytesIO()
+        plt.savefig(iobytes, format="jpg", dpi=300)
+        iobytes.seek(0)
+        jsdata = base64.b64encode(iobytes.read()).decode()
+        return jsdata
+    else:
+        plt.savefig(output, dpi=300)
+    return True

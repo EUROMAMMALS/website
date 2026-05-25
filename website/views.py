@@ -17,6 +17,7 @@ from events.models import EventExternal
 from publications.models import Publication
 from publications.models import PublicationExternal
 from pagers.models import Pager
+from euromammals.functions import deployment_distribution_plot
 
 from .forms import ContactForm
 
@@ -27,17 +28,21 @@ def homepage(request):
     myevents = Event.objects.filter(start__gt=today).filter(~Q(as_participant=True))[:6]
     reversed_events = sorted(myevents, key=lambda o: o.start)
     pubs = Publication.objects.all()[:6]
-    return render(request, template_name="home.html", context={"events": reversed_events, "pubs": pubs})
+    return render(
+        request,
+        template_name="home.html",
+        context={"events": reversed_events, "pubs": pubs},
+    )
 
 
 def contact_view(request):
     """Function for contact"""
-    if request.method == 'POST':
+    if request.method == "POST":
         form = ContactForm(request.POST)
         if form.is_valid():
-            #form.save()
+            # form.save()
             tolist = ["euromammals@fmach.it"]
-            form_email = form.cleaned_data['from_email']
+            form_email = form.cleaned_data["from_email"]
             if form_email:
                 tolist.append(form_email)
             for idstr in form.cleaned_data["project"]:
@@ -48,16 +53,19 @@ def contact_view(request):
                     pass
             email_subject = form.cleaned_data["subject"]
             email_message = f"FROM: {form.cleaned_data['contact_name']}\nEMAIL: {form_email}\nMESSAGE: {form.cleaned_data['message']}"
-            if send_mail(email_subject, email_message, settings.EMAIL_HOST_USER, tolist):
-                return render(request, 'email_sent.html')
+            email_sent = send_mail(
+                email_subject, email_message, settings.EMAIL_HOST_USER, tolist
+            )
+            if email_sent:
+                return render(request, "email_sent.html")
             else:
                 return render(request, "500.html")
         else:
             errors = form.errors.keys()
             return render(request, "error.html", {"errs": errors})
     form = ContactForm()
-    context = {'form': form}
-    return render(request, 'contact.html', context)
+    context = {"form": form}
+    return render(request, "contact.html", context)
 
 
 def logos(request):
@@ -71,7 +79,7 @@ def logos(request):
             mylogos.append(os.path.join(suffix_dir, fil))
     print(logos)
     context = {"logos": mylogos}
-    return render(request, 'logos.html', context)
+    return render(request, "logos.html", context)
 
 
 def events(request):
@@ -106,7 +114,7 @@ def project(request, projct):
     """Function to return project"""
     try:
         user_projs = request.user.projects.all()
-    except:
+    except Exception:
         user_projs = []
     jsonpath = os.path.join(settings.STATIC_ROOT, "projects", f"{projct.lower()}.json")
     jsonfile = open(jsonpath)
@@ -122,6 +130,24 @@ def project(request, projct):
     extpub = PublicationExternal.objects.filter(project=proj)
     events = Event.objects.filter(projects=proj).filter(~Q(as_participant=True))
     participants = EventExternal.objects.filter(project=proj)
+    if proj.name.lower() not in ("eurolynx"):
+        try:
+            plot_area = deployment_distribution_plot(dbname=f"{proj.name.lower()}_db")
+        except Exception as e:
+            print(f"Error occurred while generating plot for {proj.name}: {e}")
+            plot_area = None
+    else:
+        plot_area = None
+    if proj.name.lower():
+        try:
+            plot_research = deployment_distribution_plot(
+                dbname=f"{proj.name.lower()}_db", research_group=True
+            )
+        except Exception as e:
+            print(f"Error occurred while generating plot for {proj.name}: {e}")
+            plot_research = None
+    else:
+        plot_research = None
     return render(
         request,
         template_name="project.html",
@@ -133,9 +159,12 @@ def project(request, projct):
             "external_events": participants,
             "external_pubs": extpub,
             "template": proj_template,
-            "termofuse": proj_termofuse
-        }
+            "termofuse": proj_termofuse,
+            "plot_area": plot_area,
+            "plot_research": plot_research,
+        },
     )
+
 
 @login_required
 def pagers(request):
@@ -155,12 +184,16 @@ def pagers(request):
     if not all:
         mypagers = mypagers.filter(active=True)
     for proj in all_projs:
-        outputs[str(proj)] = {"pagers": mypagers.filter(project=proj), "url": proj.pager_status}
+        outputs[str(proj)] = {
+            "pagers": mypagers.filter(project=proj),
+            "url": proj.pager_status,
+        }
     return render(
         request,
         template_name="pagers.html",
-        context={"items": outputs, "euromammalsurl": mamproj[0].pager_status}
+        context={"items": outputs, "euromammalsurl": mamproj[0].pager_status},
     )
+
 
 @login_required
 def mailing(request):
@@ -175,6 +208,7 @@ def mailing(request):
         outputs[str(proj)] = proj.mailing_list
     return render(request, template_name="mailing.html", context={"items": outputs})
 
+
 @login_required
 def database(request):
     """Function to return database info
@@ -183,6 +217,7 @@ def database(request):
         request (obj): the request object
     """
     return render(request, template_name="database.html")
+
 
 @user_passes_test(is_datacurator)
 def term_of_use(request):
@@ -193,7 +228,16 @@ def term_of_use(request):
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="term_of_use.csv"'
         writer = csv.writer(response)
-        writer.writerow(["Research Group", "Project", "Year", "Contact People", "Contact User", "Term of Use"])
+        writer.writerow(
+            [
+                "Research Group",
+                "Project",
+                "Year",
+                "Contact People",
+                "Contact User",
+                "Term of Use",
+            ]
+        )
         for item in data:
             writer.writerow(
                 [
@@ -202,7 +246,7 @@ def term_of_use(request):
                     item.year,
                     item.contact_people,
                     item.contact_user if item.contact_user else "",
-                    item.term_of_use
+                    item.term_of_use,
                 ]
             )
         return response

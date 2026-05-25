@@ -110,11 +110,19 @@
 </section>
 
 <!--chart section-->
-<section class="p-5 section-angle top-right bottom-right" id="section-chart">
+<section class="p-2 section-angle top-right bottom-right" id="section-chart">
     <div class="container">
         <div class="row">
             <div class="col-md-6 mx-auto text-center">
-                <div id="chart"></div>
+                <div id="chart">
+                    {% if plot_area %}
+                        <img src="data:image/jpeg;base64,{{ plot_area }}" alt="Deployment Distribution Chart" width="120%">
+                    {% endif %}
+                    {% if plot_research %}
+                        <br><br>
+                        <img src="data:image/jpeg;base64,{{ plot_research }}" alt="Deployment Distribution Chart" width="120%">
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
