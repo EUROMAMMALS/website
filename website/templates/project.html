@@ -110,6 +110,7 @@
 </section>
 
 <!--chart section-->
+{% if user.is_authenticated and (plot_area or plot_research) %}
 <section class="p-2 section-angle top-right bottom-right" id="section-chart">
     <div class="container">
         <div class="row">
@@ -127,6 +128,7 @@
         </div>
     </div>
 </section>
+{% endif %}
 
 <!--events section-->
 {% if events|length > 0 %}
