@@ -50,25 +50,84 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = User
-    list_display = ("username", "email", "first_name", "last_name", "research_group_list", "organizations_list", "projects_list", "euromammals_username")#"is_staff",)
-    list_filter = ("is_staff", "is_superuser", "is_active", "groups", "projects", "research_group", "research_group__organization")
+    list_display = (
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "research_group_list",
+        "organizations_list",
+        "projects_list",
+        "euromammals_username",
+    )  # "is_staff",)
+    list_filter = (
+        "is_staff",
+        "is_superuser",
+        "is_active",
+        "groups",
+        "projects",
+    )  # , "research_group", "research_group__organization")
     fieldsets = (
         (None, {"fields": ("email", "password", "first_name", "last_name")}),
-        ("Personal info", {"fields": ["bio", "research_group", "projects", "image", "euromammals_username", "note",]}),
-        ("Permissions", {"fields": ("is_staff", "is_active", "is_superuser", "groups", "user_permissions")}),
-    )
-    add_fieldsets = (
-        (None, {
-            "classes": ("wide",),
-            "fields": (
-                "username", "first_name", "last_name", "email", "password1",
-                "password2", "is_staff", "is_active", "is_superuser", "groups",
-                "user_permissions", "bio", "research_group", "projects", "image"
-            )}
+        (
+            "Personal info",
+            {
+                "fields": [
+                    "bio",
+                    "research_group",
+                    "projects",
+                    "image",
+                    "euromammals_username",
+                    "note",
+                ]
+            },
+        ),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_staff",
+                    "is_active",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                )
+            },
         ),
     )
-    search_fields = ("username", "email",)
-    ordering = ("last_name", "first_name",)
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "username",
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "password1",
+                    "password2",
+                    "is_staff",
+                    "is_active",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                    "bio",
+                    "research_group",
+                    "projects",
+                    "image",
+                ),
+            },
+        ),
+    )
+    search_fields = (
+        "username",
+        "email",
+    )
+    ordering = (
+        "last_name",
+        "first_name",
+    )
 
     change_list_template = "admin/import_csv.html"
 
@@ -118,19 +177,19 @@ class CustomUserAdmin(UserAdmin):
                             self.message_user(
                                 request,
                                 f"Research group with value {rg} not found. User {username} not upload",
-                                level=messages.WARNING
+                                level=messages.WARNING,
                             )
                             errors += 1
                             continue
                 user = usermodel.objects.create_user(
-                    email = vals[header.index("email")],
-                    username = username,
-                    password = vals[header.index("password")],
-                    is_staff = is_staff,
-                    first_name = vals[header.index("first_name")],
-                    last_name = vals[header.index("last_name")],
-                    #bio = vals[header.index("bio")],
-                    is_superuser = is_superuser
+                    email=vals[header.index("email")],
+                    username=username,
+                    password=vals[header.index("password")],
+                    is_staff=is_staff,
+                    first_name=vals[header.index("first_name")],
+                    last_name=vals[header.index("last_name")],
+                    # bio = vals[header.index("bio")],
+                    is_superuser=is_superuser,
                 )
                 user.research_group.add(regroup)
                 for proj in Project.objects.exclude(name__in=["EXTERNAL"]):
@@ -139,29 +198,38 @@ class CustomUserAdmin(UserAdmin):
                 user.save()
                 mail_text = f"Dear {user.first_name} {user.last_name},\na new account on EUROMAMMALS website was created for you.\n"
                 mail_text += f"Your username is {user.username} and password {vals[header.index('password')]}.\n"
-                mail_text += f"You can login here https://euromammals.org/accounts/login/ \n"
+                mail_text += (
+                    f"You can login here https://euromammals.org/accounts/login/ \n"
+                )
                 mail_text += f"Please change password as soon as possible at this link https://euromammals.org/accounts/password_change/ \n"
                 mail_text += "Kind regards"
                 try:
-                    sentmail = send_mail("Registration to EUROMAMMALS website", mail_text, None, [user.email])
+                    sentmail = send_mail(
+                        "Registration to EUROMAMMALS website",
+                        mail_text,
+                        None,
+                        [user.email],
+                    )
                 except Exception as err:
                     self.message_user(
                         request,
                         f"Not able to send email to {user.username}: {err}",
-                        level=messages.WARNING
+                        level=messages.WARNING,
                     )
                     errors += 1
                 if sentmail == 0:
                     self.message_user(
                         request,
                         f"Not able to send email to {user.username}",
-                        level=messages.WARNING
+                        level=messages.WARNING,
                     )
                     errors += 1
             if errors == 0:
                 self.message_user(request, "Your csv file has been imported correctly")
             else:
-                self.message_user(request, f"Your csv file has been imported but {errors} failed")
+                self.message_user(
+                    request, f"Your csv file has been imported but {errors} failed"
+                )
             return redirect("..")
         form = UserImportForm()
         payload = {"form": form}
@@ -187,12 +255,15 @@ class CustomUserAdmin(UserAdmin):
     def get_search_results(self, request, queryset, search_term):
         orig_queryset = queryset
         queryset, use_distinct = super(CustomUserAdmin, self).get_search_results(
-                                               request, queryset, search_term)
+            request, queryset, search_term
+        )
         search_words = search_term.split()
         if search_words:
-            q_objects = [Q(**{field + "__icontains": word})
-                                for field in self.search_fields
-                                for word in search_words]
+            q_objects = [
+                Q(**{field + "__icontains": word})
+                for field in self.search_fields
+                for word in search_words
+            ]
             queryset |= self.model.objects.filter(reduce(or_, q_objects))
 
         queryset = queryset & orig_queryset
@@ -202,8 +273,16 @@ class CustomUserAdmin(UserAdmin):
 class ResearchGroupAdmin(CSVAdmin):
     search_fields = ("name", "organization__name")
 
+
 class ResearchGroupProjectAdmin(CSVAdmin):
-    list_display = ("researchgroup", "organization_name", "project", "contact_user_list", "year", "term_of_use")
+    list_display = (
+        "researchgroup",
+        "organization_name",
+        "project",
+        "contact_user_list",
+        "year",
+        "term_of_use",
+    )
     list_filter = ("project", "researchgroup", OrgaFilter)
 
 
