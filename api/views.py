@@ -4,7 +4,7 @@ from euromammals.functions import metadata_to_eml
 
 
 # Create your views here.
-def metadata(request, projct):
+def metadata(request, projct, area_id=None):
     """Function to return project"""
     format = request.GET.get("format", None)
     try:
@@ -20,8 +20,8 @@ def metadata(request, projct):
     proj = projct.lower()
     if proj in ("eurodeer", "eureddeer"):
         ORDER = "Artiodactyla"
-        FAMILY = ("Cervidae",)
-        SPECIE = ("Cervus elaphus",)
+        FAMILY = "Cervidae"
+        SPECIE = "Cervus elaphus"
         COMMON_NAME = "Roe Deer"
     elif proj == "euroboar":
         ORDER = "Artiodactyla"
@@ -56,9 +56,20 @@ def metadata(request, projct):
 
     proj = f"{proj}_db"
     data = metadata_per_group(
-        proj, order_name=ORDER, family=FAMILY, species=SPECIE, common_name=COMMON_NAME
+        proj,
+        order_name=ORDER,
+        family=FAMILY,
+        species=SPECIE,
+        common_name=COMMON_NAME,
+        study_area_id=area_id,
     )
-    if format in ("gbif", "GBIF"):
+    if format in ("gbif", "GBIF") and not area_id:
+        return HttpResponse(
+            content="Error: GBIF format is available only for singular study area",
+            content_type="application/json",
+            status=500,
+        )
+    elif format in ("gbif", "GBIF") and area_id:
         data = metadata_to_eml(data)
         conttype = "text/xml"
     else:

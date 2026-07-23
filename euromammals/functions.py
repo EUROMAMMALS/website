@@ -56,7 +56,8 @@ from .sql_queries import QUERY_GPS_BOAR_RESEARCH_GROUP
 from .sql_queries import QUERY_GPS_DEER_RESEARCH_GROUP
 from .sql_queries import SQL_QUERIES_LYNX
 from .sql_queries import QUERY_GPS_DEER
-from .sql_queries import QUERY_METADATA_DEER
+from .sql_queries import QUERY_METADATA
+from .sql_queries import QUERY_METADATA_ID
 
 TMPDIR = tempfile.gettempdir()
 
@@ -694,6 +695,7 @@ def metadata_per_group(
     family="Cervidae",
     species="Cervus elaphus",
     common_name="Roe Deer",
+    study_area_id=None,
 ):
     """Function to create the plot of distribution of deployments per year
 
@@ -711,14 +713,25 @@ def metadata_per_group(
     """
 
     # Establish the psycopg2 connection
-    QUERY = QUERY_METADATA_DEER.format(
-        KINGDOM=kingdom,
-        PHYLUM=phylum,
-        ORDER=order_name,
-        FAMILY=family,
-        SPECIE=species,
-        NAME=common_name,
-    )
+    if study_area_id:
+        QUERY = QUERY_METADATA_ID.format(
+            KINGDOM=kingdom,
+            PHYLUM=phylum,
+            ORDER=order_name,
+            FAMILY=family,
+            SPECIE=species,
+            NAME=common_name,
+            AREA_ID=study_area_id,
+        )
+    else:
+        QUERY = QUERY_METADATA.format(
+            KINGDOM=kingdom,
+            PHYLUM=phylum,
+            ORDER=order_name,
+            FAMILY=family,
+            SPECIE=species,
+            NAME=common_name,
+        )
     conn = _get_psycopg2_connection(dbname)
     with conn.cursor() as cursor:
         cursor.execute(QUERY)
@@ -793,13 +806,13 @@ def metadata_to_eml(
 
         # --- creator ---
         creator = ET.SubElement(dataset, "creator")
-        _add_individual_name(creator, rec.get("givenName1"), rec.get("surName1"))
-        if rec.get("organizationName1"):
-            ET.SubElement(creator, "organizationName").text = str(
-                rec["organizationName1"]
+        _add_individual_name(creator, rec.get("givenname1"), rec.get("surname1"))
+        if rec.get("organizationname1"):
+            ET.SubElement(creator, "organizationname").text = str(
+                rec["organizationname1"]
             )
-        if rec.get("positionName1"):
-            ET.SubElement(creator, "positionName").text = str(rec["positionName1"])
+        if rec.get("positionname1"):
+            ET.SubElement(creator, "positionname").text = str(rec["positionname1"])
         _add_address(creator, rec.get("country1"))
         if rec.get("electronicmailaddress1"):
             ET.SubElement(creator, "electronicMailAddress").text = str(
@@ -812,13 +825,13 @@ def metadata_to_eml(
         metadata_provider = ET.SubElement(dataset, "metadataProvider")
         mp_name = ET.SubElement(metadata_provider, "individualName")
         ET.SubElement(mp_name, "givenName").text = str(
-            rec.get("metadataProvider_givenName", "EUROMAMMALS")
+            rec.get("metadataProvider_givenname", "EUROMAMMALS")
         )
         ET.SubElement(mp_name, "surName").text = str(
-            rec.get("metadataProvider_surName", "EUROMAMMALS")
+            rec.get("metadataProvider_surname", "EUROMAMMALS")
         )
         ET.SubElement(metadata_provider, "organizationName").text = str(
-            rec.get("metadataProvider_organizationName", "EUROMAMMALS")
+            rec.get("metadataProvider_organizationname", "EUROMAMMALS")
         )
         if rec.get("metadataProvider_electronicMailAddress"):
             ET.SubElement(metadata_provider, "electronicMailAddress").text = str(
@@ -826,15 +839,15 @@ def metadata_to_eml(
             )
 
         # --- associatedParty ---
-        if rec.get("givenName2"):
+        if rec.get("givenname2"):
             party = ET.SubElement(dataset, "associatedParty")
-            _add_individual_name(party, rec.get("givenName2"), rec.get("surName2"))
-            if rec.get("organizationName2"):
+            _add_individual_name(party, rec.get("givenname2"), rec.get("surname2"))
+            if rec.get("organizationname2"):
                 ET.SubElement(party, "organizationName").text = str(
-                    rec["organizationName2"]
+                    rec["organizationname2"]
                 )
-            if rec.get("positionName2"):
-                ET.SubElement(party, "positionName").text = str(rec["positionName2"])
+            if rec.get("positionname2"):
+                ET.SubElement(party, "positionname").text = str(rec["positionname2"])
             _add_address(party, rec.get("country2"))
             if rec.get("electronicmailaddress2"):
                 ET.SubElement(party, "electronicMailAddress").text = str(
@@ -870,10 +883,7 @@ def metadata_to_eml(
         rights = ET.SubElement(dataset, "intellectualRights")
         ET.SubElement(rights, "para").text = str(
             rec.get(
-                "intellectualRights",
-                "This work is licensed under a Creative Commons "
-                "CCZero 1.0 License "
-                "http://creativecommons.org/publicdomain/zero/1.0/legalcode.",
+                "intellectualrights",
             )
         )
 
@@ -923,16 +933,16 @@ def metadata_to_eml(
             tc = ET.SubElement(tax_cov, "taxonomicClassification")
             ET.SubElement(tc, "taxonRankName").text = rank_name
             ET.SubElement(tc, "taxonRankValue").text = rank_value
-        # add commonName to species level
+        # add commonname to species level
         last_tc = tax_cov.findall("taxonomicClassification")[-1]
-        ET.SubElement(last_tc, "commonName").text = rec.get("commonname")
+        ET.SubElement(last_tc, "commonname").text = rec.get("commonname")
 
         # --- contact ---
         contact = ET.SubElement(dataset, "contact")
-        _add_individual_name(contact, rec.get("givenName1"), rec.get("surName1"))
-        if rec.get("organizationName1"):
-            ET.SubElement(contact, "organizationName").text = str(
-                rec["organizationName1"]
+        _add_individual_name(contact, rec.get("givenname1"), rec.get("surname1"))
+        if rec.get("organizationname1"):
+            ET.SubElement(contact, "organizationname").text = str(
+                rec["organizationname1"]
             )
         _add_address(contact, rec.get("country1"))
         if rec.get("electronicmailaddress1"):
@@ -940,11 +950,27 @@ def metadata_to_eml(
                 rec["electronicmailaddress1"]
             )
 
+        # --- method ---
+        methods_el = ET.SubElement(dataset, "methods")
+        methodStep = ET.SubElement(methods_el, "methodStep")
+        methodDesc = ET.SubElement(methodStep, "description")
+        ET.SubElement(methodDesc, "para").text = rec.get("method")
+        sampling_el = ET.SubElement(methods_el, "sampling")
+        samplingExt = ET.SubElement(sampling_el, "studyExtent")
+        samplingDesc = ET.SubElement(samplingExt, "description")
+        ET.SubElement(samplingDesc, "para").text = "See Geographic Coverage"
+        samplingDesc_el = ET.SubElement(sampling_el, "samplingDescription")
+        ET.SubElement(samplingDesc_el, "para").text = rec.get("study_area_description")
+
+        quality_el = ET.SubElement(methods_el, "qualityControl")
+        qualityDesc = ET.SubElement(quality_el, "description")
+        ET.SubElement(qualityDesc, "para").text = rec.get("qualitycontrol")
+
         # --- project ---
         project_el = ET.SubElement(dataset, "project")
         ET.SubElement(project_el, "title").text = str(rec.get("title", ""))
         personnel = ET.SubElement(project_el, "personnel")
-        _add_individual_name(personnel, rec.get("givenName1"), rec.get("surName1"))
+        _add_individual_name(personnel, rec.get("givenname1"), rec.get("surname1"))
         ET.SubElement(personnel, "role").text = "principalInvestigator"
 
         # Serialize

@@ -31,6 +31,14 @@
                         <p>
                             Deployment dates: {{ item.begindate }} - {{ item.enddate }}
                         </p>
+                        <div class="row">
+                            <div class="col-12 col-md-6 mx-auto center">
+                                <a class="btn btn-primary" href="/api/metadata/eurodeer/{{ item.study_areas_id1 }}/?format=gbif" target="_blank">Full metadata in EML format</a>
+                            </div>
+                            <div class="col-12 col-md-6 mx-auto center">
+                                <a class="btn btn-primary" href="/api/metadata/eurodeer/{{ item.study_areas_id1 }}/" target="_blank">Full metadata in JSON format</a>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-12 col-lg-4">
                         <div id="map-{{ item.title|clean_string }}" class="metadata-map"></div>
