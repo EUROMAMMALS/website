@@ -25,6 +25,7 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from decimal import Decimal
+import xml.etree.ElementTree as ET
 
 # from shapely.geometry import shape
 
@@ -685,21 +686,42 @@ def deployment_distribution_plot(dbname, output=None, research_group=False):
     return True
 
 
-def metadata_per_group(dbname, output=None):
+def metadata_per_group(
+    dbname,
+    kingdom="Animalia",
+    phylum="Chordata",
+    order_name="Artiodactyla",
+    family="Cervidae",
+    species="Cervus elaphus",
+    common_name="Roe Deer",
+):
     """Function to create the plot of distribution of deployments per year
 
     Parameters:
         dbname (str): name of the database to connect to
-        output (str): path to save the output plot
+        kingdom (str): Taxonomic kingdom
+        phylum (str): Taxonomic phylum
+        order_name (str): Taxonomic order
+        family (str): Taxonomic family
+        species (str): Taxonomic species
+        common_name (str): Common name of the species
 
     Returns:
         list: a list with the value to show and the challenge
     """
 
     # Establish the psycopg2 connection
+    QUERY = QUERY_METADATA_DEER.format(
+        KINGDOM=kingdom,
+        PHYLUM=phylum,
+        ORDER=order_name,
+        FAMILY=family,
+        SPECIE=species,
+        NAME=common_name,
+    )
     conn = _get_psycopg2_connection(dbname)
     with conn.cursor() as cursor:
-        cursor.execute(QUERY_METADATA_DEER)
+        cursor.execute(QUERY)
         rows = cursor.fetchall()
 
         # Extract column names from the cursor description
@@ -709,3 +731,227 @@ def metadata_per_group(dbname, output=None):
     meta = pd.DataFrame(rows, columns=columns)
     conn.close()
     return meta.to_json(orient="records", date_format="iso")
+
+
+def _add_individual_name(parent, given_name, sur_name):
+    """Helper to add an individualName element"""
+    name_el = ET.SubElement(parent, "individualName")
+    ET.SubElement(name_el, "givenName").text = str(given_name) if given_name else ""
+    ET.SubElement(name_el, "surName").text = str(sur_name) if sur_name else ""
+    return name_el
+
+
+def _add_address(parent, country):
+    """Helper to add an address element"""
+    if not country:
+        return None
+    addr = ET.SubElement(parent, "address")
+    ET.SubElement(addr, "country").text = str(country)
+    return addr
+
+
+def metadata_to_eml(
+    metadata_data,
+):
+    """Convert the output of metadata_per_group to an EML 2.1.1 XML string.
+
+    Parameters:
+        metadata_data: JSON string or list of dicts (output of metadata_per_group)
+
+    Returns:
+        str or list: EML XML string for a single record, or list of XML strings
+            when the input contains multiple records
+    """
+    if isinstance(metadata_data, str):
+        records = json.loads(metadata_data)
+    else:
+        records = metadata_data
+
+    if not isinstance(records, list):
+        records = [records]
+
+    results = []
+    for rec in records:
+        eml = ET.Element("eml:eml")
+        eml.set("xmlns:eml", "eml://ecoinformatics.org/eml-2.1.1")
+        eml.set("xmlns:dc", "http://purl.org/dc/terms/")
+        eml.set(
+            "xmlns:xsi",
+            "http://www.w3.org/2001/XMLSchema-instance",
+        )
+        eml.set(
+            "xsi:schemaLocation",
+            "eml://ecoinformatics.org/eml-2.1.1 "
+            "http://rs.gbif.org/schema/eml-gbif-profile/1.0.2/eml.xsd",
+        )
+        eml.set("xml:lang", "eng")
+
+        # --- dataset ---
+        dataset = ET.SubElement(eml, "dataset")
+
+        ET.SubElement(dataset, "title").text = str(rec.get("title", ""))
+
+        # --- creator ---
+        creator = ET.SubElement(dataset, "creator")
+        _add_individual_name(creator, rec.get("givenName1"), rec.get("surName1"))
+        if rec.get("organizationName1"):
+            ET.SubElement(creator, "organizationName").text = str(
+                rec["organizationName1"]
+            )
+        if rec.get("positionName1"):
+            ET.SubElement(creator, "positionName").text = str(rec["positionName1"])
+        _add_address(creator, rec.get("country1"))
+        if rec.get("electronicmailaddress1"):
+            ET.SubElement(creator, "electronicMailAddress").text = str(
+                rec["electronicmailaddress1"]
+            )
+        if rec.get("onlineUrl1"):
+            ET.SubElement(creator, "onlineUrl").text = str(rec["onlineUrl1"])
+
+        # --- metadataProvider ---
+        metadata_provider = ET.SubElement(dataset, "metadataProvider")
+        mp_name = ET.SubElement(metadata_provider, "individualName")
+        ET.SubElement(mp_name, "givenName").text = str(
+            rec.get("metadataProvider_givenName", "EUROMAMMALS")
+        )
+        ET.SubElement(mp_name, "surName").text = str(
+            rec.get("metadataProvider_surName", "EUROMAMMALS")
+        )
+        ET.SubElement(metadata_provider, "organizationName").text = str(
+            rec.get("metadataProvider_organizationName", "EUROMAMMALS")
+        )
+        if rec.get("metadataProvider_electronicMailAddress"):
+            ET.SubElement(metadata_provider, "electronicMailAddress").text = str(
+                rec["metadataProvider_electronicMailAddress"]
+            )
+
+        # --- associatedParty ---
+        if rec.get("givenName2"):
+            party = ET.SubElement(dataset, "associatedParty")
+            _add_individual_name(party, rec.get("givenName2"), rec.get("surName2"))
+            if rec.get("organizationName2"):
+                ET.SubElement(party, "organizationName").text = str(
+                    rec["organizationName2"]
+                )
+            if rec.get("positionName2"):
+                ET.SubElement(party, "positionName").text = str(rec["positionName2"])
+            _add_address(party, rec.get("country2"))
+            if rec.get("electronicmailaddress2"):
+                ET.SubElement(party, "electronicMailAddress").text = str(
+                    rec["electronicmailaddress2"]
+                )
+            ET.SubElement(party, "role").text = "author"
+
+        # --- pubDate ---
+        ET.SubElement(dataset, "pubDate").text = date.today().isoformat()
+
+        # --- language ---
+        ET.SubElement(dataset, "language").text = "eng"
+
+        # --- abstract ---
+        abstract = ET.SubElement(dataset, "abstract")
+        ET.SubElement(abstract, "para").text = (
+            f"GPS data collection for movement ecology studies. "
+            f"This dataset contains GPS telemetry data from "
+            f"{rec.get('count_animals', 'N/A')} animals."
+        )
+
+        # --- keywordSet ---
+        keyword_set = ET.SubElement(dataset, "keywordSet")
+        if rec.get("keyword"):
+            ET.SubElement(keyword_set, "keyword").text = str(rec["keyword"])
+        ET.SubElement(keyword_set, "keyword").text = "Metadata"
+        ET.SubElement(keyword_set, "keywordThesaurus").text = (
+            "GBIF Dataset Type Vocabulary: "
+            "http://rs.gbif.org/vocabulary/gbif/dataset_type.xml"
+        )
+
+        # --- intellectualRights ---
+        rights = ET.SubElement(dataset, "intellectualRights")
+        ET.SubElement(rights, "para").text = str(
+            rec.get(
+                "intellectualRights",
+                "This work is licensed under a Creative Commons "
+                "CCZero 1.0 License "
+                "http://creativecommons.org/publicdomain/zero/1.0/legalcode.",
+            )
+        )
+
+        # --- coverage ---
+        coverage = ET.SubElement(dataset, "coverage")
+
+        # geographicCoverage
+        geo_cov = ET.SubElement(coverage, "geographicCoverage")
+        ET.SubElement(geo_cov, "geographicDescription").text = (
+            f"Bounding box for {rec.get('title', 'study area')}"
+        )
+        bounding = ET.SubElement(geo_cov, "boundingCoordinates")
+        ET.SubElement(bounding, "westBoundingCoordinate").text = str(
+            rec.get("min_x", "")
+        )
+        ET.SubElement(bounding, "eastBoundingCoordinate").text = str(
+            rec.get("max_x", "")
+        )
+        ET.SubElement(bounding, "northBoundingCoordinate").text = str(
+            rec.get("max_y", "")
+        )
+        ET.SubElement(bounding, "southBoundingCoordinate").text = str(
+            rec.get("min_y", "")
+        )
+
+        # temporalCoverage
+        if rec.get("begindate") and rec.get("enddate"):
+            temp_cov = ET.SubElement(coverage, "temporalCoverage")
+            range_dates = ET.SubElement(temp_cov, "rangeOfDates")
+            begin = ET.SubElement(range_dates, "beginDate")
+            ET.SubElement(begin, "calendarDate").text = str(rec["begindate"])[:10]
+            end = ET.SubElement(range_dates, "endDate")
+            ET.SubElement(end, "calendarDate").text = str(rec["enddate"])[:10]
+
+        # taxonomicCoverage
+        tax_cov = ET.SubElement(coverage, "taxonomicCoverage")
+        ET.SubElement(tax_cov, "generalTaxonomicCoverage").text = str(
+            rec.get("generalTaxonomicCoverage", "European terrestrial mammals")
+        )
+        for rank_name, rank_value in [
+            ("kingdom", rec.get("kingdom")),
+            ("phylum", rec.get("phylum")),
+            ("order", rec.get("order_")),
+            ("family", rec.get("family_")),
+            ("species", rec.get("species")),
+        ]:
+            tc = ET.SubElement(tax_cov, "taxonomicClassification")
+            ET.SubElement(tc, "taxonRankName").text = rank_name
+            ET.SubElement(tc, "taxonRankValue").text = rank_value
+        # add commonName to species level
+        last_tc = tax_cov.findall("taxonomicClassification")[-1]
+        ET.SubElement(last_tc, "commonName").text = rec.get("commonname")
+
+        # --- contact ---
+        contact = ET.SubElement(dataset, "contact")
+        _add_individual_name(contact, rec.get("givenName1"), rec.get("surName1"))
+        if rec.get("organizationName1"):
+            ET.SubElement(contact, "organizationName").text = str(
+                rec["organizationName1"]
+            )
+        _add_address(contact, rec.get("country1"))
+        if rec.get("electronicmailaddress1"):
+            ET.SubElement(contact, "electronicMailAddress").text = str(
+                rec["electronicmailaddress1"]
+            )
+
+        # --- project ---
+        project_el = ET.SubElement(dataset, "project")
+        ET.SubElement(project_el, "title").text = str(rec.get("title", ""))
+        personnel = ET.SubElement(project_el, "personnel")
+        _add_individual_name(personnel, rec.get("givenName1"), rec.get("surName1"))
+        ET.SubElement(personnel, "role").text = "principalInvestigator"
+
+        # Serialize
+        ET.indent(eml, space="  ")
+        xml_str = ET.tostring(eml, encoding="unicode", xml_declaration=False)
+        results.append(xml_str)
+
+    if len(results) == 1:
+        return results[0]
+    return results

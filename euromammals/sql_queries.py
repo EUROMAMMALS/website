@@ -265,12 +265,12 @@ SELECT
     ---<generalTaxonomicCoverage>
     count_animals,
     'European terrestrial mammals' generalTaxonomicCoverage,
-    'Animalia' kindom,
-    'Chordata' phylum,
-    'Artiodactyla' order_,
-    'Cervidae' family_,
-    'Cervus elaphus' species,
-    'Roe Deer' commonName 
+    '{KINGDOM}' kindom,
+    '{PHYLUM}' phylum,
+    '{ORDER}' order_,
+    '{FAMILY}' family_,
+    '{SPECIE}' species,
+    '{NAME}' commonName 
 FROM 
     main.study_areas s,
     (SELECT 
