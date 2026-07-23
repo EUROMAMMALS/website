@@ -18,7 +18,7 @@ from publications.models import Publication
 from publications.models import PublicationExternal
 from pagers.models import Pager
 from euromammals.functions import deployment_distribution_plot
-
+from euromammals.functions import metadata_per_group
 from .forms import ContactForm
 
 
@@ -97,6 +97,13 @@ def event(request, idd):
     """Function to return page for single event"""
     thisevent = Event.objects.get(id=idd)
     return render(request, template_name="event.html", context={"item": thisevent})
+
+
+def metadata(request, project):
+    proj = f"{project.lower()}_db"
+    data = json.loads(metadata_per_group(proj))
+
+    return render(request, template_name="metadata.html", context={"items": data})
 
 
 def publications(request):

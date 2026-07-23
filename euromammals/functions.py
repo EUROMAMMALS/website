@@ -6,6 +6,7 @@ Created on Tue Jul 12 12:35:34 2021
 @author: lucadelu
 """
 
+import json
 import os
 import urllib.request
 import tempfile
@@ -54,8 +55,25 @@ from .sql_queries import QUERY_GPS_BOAR_RESEARCH_GROUP
 from .sql_queries import QUERY_GPS_DEER_RESEARCH_GROUP
 from .sql_queries import SQL_QUERIES_LYNX
 from .sql_queries import QUERY_GPS_DEER
+from .sql_queries import QUERY_METADATA_DEER
 
 TMPDIR = tempfile.gettempdir()
+
+
+def _get_psycopg2_connection(dbname):
+    db_default = settings.DATABASES["default"]
+    try:
+        conn = psycopg2.connect(
+            host=db_default.get("HOST", "localhost"),
+            port=db_default.get("PORT", "5432"),
+            dbname=dbname,
+            user=db_default.get("USER", ""),
+            password=db_default.get("PASSWORD", ""),
+        )
+    except Exception as e:
+        print(f"Error connecting to database: {e}")
+        return False
+    return conn
 
 
 def is_datacurator(user):
@@ -545,18 +563,7 @@ def deployment_distribution_plot(dbname, output=None, research_group=False):
     """
 
     # Establish the psycopg2 connection
-    db_default = settings.DATABASES["default"]
-    try:
-        conn = psycopg2.connect(
-            host=db_default.get("HOST", "localhost"),
-            port=db_default.get("PORT", "5432"),
-            dbname=dbname,
-            user=db_default.get("USER", ""),
-            password=db_default.get("PASSWORD", ""),
-        )
-    except Exception as e:
-        print(f"Error connecting to database: {e}")
-        return False
+    conn = _get_psycopg2_connection(dbname)
     if research_group:
         if dbname in ("eurodeer_db", "eureddeer_db", "euroibex_db", "eurowildcat_db"):
             QUERY_GPS = QUERY_GPS_DEER_RESEARCH_GROUP
@@ -676,3 +683,29 @@ def deployment_distribution_plot(dbname, output=None, research_group=False):
     else:
         plt.savefig(output, dpi=300)
     return True
+
+
+def metadata_per_group(dbname, output=None):
+    """Function to create the plot of distribution of deployments per year
+
+    Parameters:
+        dbname (str): name of the database to connect to
+        output (str): path to save the output plot
+
+    Returns:
+        list: a list with the value to show and the challenge
+    """
+
+    # Establish the psycopg2 connection
+    conn = _get_psycopg2_connection(dbname)
+    with conn.cursor() as cursor:
+        cursor.execute(QUERY_METADATA_DEER)
+        rows = cursor.fetchall()
+
+        # Extract column names from the cursor description
+        columns = [col[0] for col in cursor.description]
+
+    # Create the Pandas DataFrame and close the connection
+    meta = pd.DataFrame(rows, columns=columns)
+    conn.close()
+    return meta.to_json(orient="records", date_format="iso")

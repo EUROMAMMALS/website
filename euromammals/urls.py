@@ -13,23 +13,23 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
 from django.views.i18n import JavaScriptCatalog
 from django.conf.urls.static import static
 from django.conf import settings
-from django.contrib.auth import views as auth_views
 import website.views as wviews
 
 js_info_dict = {
-   'domain': 'django',
-   'packages': None,
+    "domain": "django",
+    "packages": None,
 }
 
 urlpatterns = [
     path("mammalsadmin/", admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path("accounts/", include("django.contrib.auth.urls")),
     path("", wviews.homepage),
     path("contact/", wviews.contact_view),
     path("mailinglists/", wviews.mailing),
@@ -50,13 +50,15 @@ urlpatterns = [
     path("eurojackal/", wviews.project, {"projct": "EUROJACKAL"}),
     path("afrimove/", wviews.project, {"projct": "AfriMove"}),
     path("euroraccoon/", wviews.project, {"projct": "EURORACCOON"}),
-    path('i18n/', include('django.conf.urls.i18n')),
-    path('jsi18n/', JavaScriptCatalog.as_view(), js_info_dict,
-         name='javascript_catalog'),
-    path('captcha/', include('captcha.urls')),
+    path("i18n/", include("django.conf.urls.i18n")),
+    path(
+        "jsi18n/", JavaScriptCatalog.as_view(), js_info_dict, name="javascript_catalog"
+    ),
+    path("captcha/", include("captcha.urls")),
     path("termofuse/", wviews.term_of_use),
-] + static(settings.STATIC_URL,
-           document_root=settings.STATIC_ROOT)
+    path("metadata/<str:project>/", wviews.metadata),
+    path("api/", include("api.urls")),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

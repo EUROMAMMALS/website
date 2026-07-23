@@ -20,6 +20,10 @@ footer {
     height: 75vh;
 }
 
+.metadata-map {
+    height: 30vh;
+}
+
 ul.nobull {
     list-style-type: none;
 }

@@ -5,6 +5,7 @@ from django.conf import settings
 
 register = template.Library()
 
+
 @register.filter
 def und_up(value):
     """Return a string without underscore and capitalized
@@ -15,13 +16,14 @@ def und_up(value):
     Returns:
         str: the corrected string
     """
-    if value.startswith('id_'):
-        value = value.lstrip('id_')
-    if value == 'pos_data':
-        value = 'placement date'
-    return value.replace("_"," ").capitalize()
+    if value.startswith("id_"):
+        value = value.lstrip("id_")
+    if value == "pos_data":
+        value = "placement date"
+    return value.replace("_", " ").capitalize()
 
-@register.filter(name='getattribute')
+
+@register.filter(name="getattribute")
 def getattribute(value, arg):
     """Return the value from a dictionare for key arg"""
     if value is None or arg is None:
@@ -46,12 +48,14 @@ def getattribute(value, arg):
     except TypeError:
         return ""
 
-@register.filter(name='natkey')
+
+@register.filter(name="natkey")
 def natkey(value):
     """Return value as string"""
     return str(value)
 
-@register.filter(name='has_group')
+
+@register.filter(name="has_group")
 def has_group(user, group_name):
     """Function to check if a user is in a group"""
     try:
@@ -60,22 +64,25 @@ def has_group(user, group_name):
         return False
     return True
 
-@register.filter(name='words')
+
+@register.filter(name="words")
 def words(value, nwords=10):
     """Return a limited number of words"""
-    lis = value.split(' ')
+    lis = value.split(" ")
     if isinstance(lis, list):
-        return ' '.join(lis[:nwords])
+        return " ".join(lis[:nwords])
     else:
         return value
+
 
 @register.simple_tag(takes_context=True)
 def url_replace(context, **kwargs):
     """Return query"""
-    query = context['request'].GET.copy()
+    query = context["request"].GET.copy()
     for k, v in kwargs.items():
         query[k] = v
     return query.urlencode()
+
 
 @register.filter(name="contains")
 def contains(value, arg):
@@ -88,13 +95,15 @@ def contains(value, arg):
     """
     return arg in value
 
-@register.filter(name='capfirstspace')
+
+@register.filter(name="capfirstspace")
 def capfirstspace(value):
     """Capitalize all string between spaces"""
     out = []
-    for i in value.split('_'):
+    for i in value.split("_"):
         out.append(i.capitalize())
-    return ' '.join(out)
+    return " ".join(out)
+
 
 @register.simple_tag
 def csv_exists(table):
@@ -105,7 +114,8 @@ def csv_exists(table):
         return f"{static}csv_template/{table}.csv"
     return f"{static}csv_template/simple.csv"
 
-@register.filter(name='path_exists')
+
+@register.filter(name="path_exists")
 def path_exists(path):
     """Check if CSV template exists otherwise return simple one"""
     if not path:
@@ -115,13 +125,15 @@ def path_exists(path):
         return True
     return False
 
-@register.filter(name='allower')
+
+@register.filter(name="allower")
 def allower(value):
     """Return all the text lowercase without underscore"""
     out = ""
-    for i in value.split('_'):
+    for i in value.split("_"):
         out += i.lower()
     return out
+
 
 @register.simple_tag
 def get_years():
@@ -129,13 +141,20 @@ def get_years():
     years = []
     thisyear = date.today().year
     for year in range(2023, thisyear + 1):
-    #for dat in Sampling.objects.dates('start_date', 'year'):
+        # for dat in Sampling.objects.dates('start_date', 'year'):
         years.append(year)
     return years
 
-@register.filter(name='split')
+
+@register.filter(name="split")
 def split(value, key):
     """
-        Returns the value turned into a list.
+    Returns the value turned into a list.
     """
     return value.split(key)
+
+
+@register.filter(name="clean_string")
+def clean_string(text: str) -> str:
+    """Removes spaces and special characters, keeping letters and numbers."""
+    return "".join(char for char in text if char.isalnum())

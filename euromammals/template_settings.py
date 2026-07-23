@@ -9,11 +9,13 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+
 import os
 import random
 from pathlib import Path
 
 from .functions import captcha_challenge
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -46,6 +48,7 @@ INSTALLED_APPS = [
     "publications",
     "website",
     "pagers",
+    "api",
 ]
 
 MIDDLEWARE = [
@@ -64,8 +67,8 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(BASE_DIR, 'website', 'templates'),
-            os.path.join(BASE_DIR, 'euromammals', 'templates'),
+            os.path.join(BASE_DIR, "website", "templates"),
+            os.path.join(BASE_DIR, "euromammals", "templates"),
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -75,9 +78,9 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
-            'libraries': {
-                'filters': 'euromammals.templatetags.filters',
-            }
+            "libraries": {
+                "filters": "euromammals.templatetags.filters",
+            },
         },
     },
 ]
@@ -89,13 +92,13 @@ WSGI_APPLICATION = "euromammals.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '5432',                      # Set to empty string for default. Not used with sqlite3.
+    "default": {
+        "ENGINE": "django.contrib.gis.db.backends.postgis",  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        "NAME": "",  # Or path to database file if using sqlite3.
+        "USER": "",  # Not used with sqlite3.
+        "PASSWORD": "",  # Not used with sqlite3.
+        "HOST": "localhost",  # Set to empty string for localhost. Not used with sqlite3.
+        "PORT": "5432",  # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -134,26 +137,26 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
-ADMIN_MEDIA_PREFIX = '/media/admin/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+ADMIN_MEDIA_PREFIX = "/media/admin/"
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'website', 'datastatic'),
+    os.path.join(BASE_DIR, "website", "datastatic"),
 ]
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = 'core.User'
+AUTH_USER_MODEL = "core.User"
 
-LOGOUT_REDIRECT_URL = '/'
-LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/"
 
 DEFAULT_FROM_EMAIL = ""
 EMAIL_HOST_USER = DEFAULT_FROM_EMAIL
@@ -162,6 +165,6 @@ EMAIL_PORT = 25
 
 CAPTCHA_FOREGROUND_COLOR = "#000000"
 CAPTCHA_FONT_SIZE = 30
-CAPTCHA_LETTER_ROTATION = [random.randint(0,90)]
-#CAPTCHA_NOISE_FUNCTIONS = []
+CAPTCHA_LETTER_ROTATION = [random.randint(0, 90)]
+# CAPTCHA_NOISE_FUNCTIONS = []
 CAPTCHA_CHALLENGE_FUNCT = captcha_challenge
