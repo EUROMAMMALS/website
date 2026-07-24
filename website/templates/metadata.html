@@ -21,17 +21,19 @@
         <div id="collapseMammals{{ item.title|clean_string }}" class="collapse" data-id="{{ item.title|clean_string }}">
             <div class="card-body" id="mammals{{ item.title|clean_string }}">
                 <div class=row>
-                    <div class="col-12 col-lg-8 mx-auto">
-                        <p>
-                            <em>{{ item.givenname1 }} {{ item.surname1 }} ({{ item.organizationname1 }}, {{ item.country1 }})</em>
-                        </p>
-                        <p>
-                            Animal counts: {{ item.count_animals }}
-                        </p>
-                        <p>
-                            Deployment dates: {{ item.begindate }} - {{ item.enddate }}
-                        </p>
-                        <div class="row">
+                    <div class="col-12 col-lg-8 mx-auto metadata-info-col">
+                        <div>
+                            <p>
+                                <em>{{ item.givenname1 }} {{ item.surname1 }} ({{ item.organizationname1 }}, {{ item.country1 }})</em>
+                            </p>
+                            <p>
+                                Animal counts: {{ item.count_animals }}
+                            </p>
+                            <p>
+                                Deployment dates: {{ item.begindate }} - {{ item.enddate }}
+                            </p>
+                        </div>
+                        <div class="row metadata-button-row">
                             <div class="col-12 col-md-6 mx-auto center">
                                 <a class="btn btn-primary" href="/api/metadata/eurodeer/{{ item.study_areas_id1 }}/?format=gbif" target="_blank">Full metadata in EML format</a>
                             </div>

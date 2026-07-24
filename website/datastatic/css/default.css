@@ -37,3 +37,13 @@ ul.nobull {
     overflow-x: hidden;
     overflow-y: scroll;
 }
+
+.metadata-info-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.metadata-info-col .metadata-button-row {
+    margin-top: auto;
+}
