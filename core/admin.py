@@ -19,6 +19,7 @@ from django.contrib.admin import SimpleListFilter
 from euromammals.functions_admin import CSVAdmin
 from euromammals.functions_admin import CsvImportForm
 from euromammals.functions_admin import csv_exists
+from euromammals.functions_admin import GeneralAdmin
 
 from .models import Project
 from .models import Organization
@@ -46,7 +47,7 @@ class OrgaFilter(SimpleListFilter):
         return queryset
 
 
-class CustomUserAdmin(UserAdmin):
+class CustomUserAdmin(UserAdmin, GeneralAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = User

@@ -14,9 +14,15 @@ from django.contrib import messages
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.db.models import Q
+from django.contrib.admin.widgets import (
+    AutocompleteSelectMultiple,
+    FilteredSelectMultiple,
+    AutocompleteSelect,
+)
 
 
 from .functions import read_csv
+
 
 def csv_exists(table):
     """Check if CSV template exists otherwise return simple one"""
@@ -41,7 +47,30 @@ class FilterProjectAdmin(admin.ModelAdmin):
 
     list_filter = ["project"]
 
-class CSVAdmin(admin.ModelAdmin):
+
+class GeneralAdmin(admin.ModelAdmin):
+    # save_as = True
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name != "research_group":
+            kwargs["widget"] = FilteredSelectMultiple(
+                db_field.verbose_name, is_stacked=False
+            )
+        else:
+            kwargs["widget"] = AutocompleteSelectMultiple(db_field, self.admin_site)
+        form_field = db_field.formfield(**kwargs)
+        return form_field
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "organization":
+            kwargs["widget"] = AutocompleteSelect(db_field, self.admin_site)
+            form_field = db_field.formfield(**kwargs)
+            return form_field
+        # custom logic
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+class CSVAdmin(GeneralAdmin):
     """General admin class to have capability to add CSV file"""
 
     change_list_template = "admin/import_csv.html"
@@ -70,9 +99,13 @@ class CSVAdmin(admin.ModelAdmin):
                     if "simpleerror" in err.keys():
                         errs += "{}\n".format(err.get("simpleerror"))
                     else:
-                        errs += "line {id}: {er}\n".format(id=err["id"], er=", ".join(err["errors"]))
+                        errs += "line {id}: {er}\n".format(
+                            id=err["id"], er=", ".join(err["errors"])
+                        )
                 self.message_user(
-                    request, f"Your csv file has been NOT imported correctly:\n {errs}", level=messages.ERROR
+                    request,
+                    f"Your csv file has been NOT imported correctly:\n {errs}",
+                    level=messages.ERROR,
                 )
             else:
                 self.message_user(request, "Your csv file has been imported")
@@ -94,19 +127,22 @@ class CSVAdmin(admin.ModelAdmin):
             return HttpResponseNotFound(f"CSV file for model {self.model} not found")
         with open(csvpath) as csvfile:
             data = csvfile.read()
-        output = HttpResponse(data, content_type='text/csv')
-        output['Content-Disposition'] = f'attachment; filename={table}.csv'
+        output = HttpResponse(data, content_type="text/csv")
+        output["Content-Disposition"] = f"attachment; filename={table}.csv"
         return output
 
     def get_search_results(self, request, queryset, search_term):
         orig_queryset = queryset
         queryset, use_distinct = super(CSVAdmin, self).get_search_results(
-                                               request, queryset, search_term)
+            request, queryset, search_term
+        )
         search_words = search_term.split()
         if search_words:
-            q_objects = [Q(**{field + '__icontains': word})
-                                for field in self.search_fields
-                                for word in search_words]
+            q_objects = [
+                Q(**{field + "__icontains": word})
+                for field in self.search_fields
+                for word in search_words
+            ]
             queryset |= self.model.objects.filter(reduce(or_, q_objects))
 
         queryset = queryset & orig_queryset
