@@ -417,6 +417,17 @@ def read_csv(lines, model, sep="|", modify=False):
     cursor = connection.cursor()
     with transaction.atomic():
         cursor.execute(updateseqquery)
+        for field in model._meta.many_to_many:
+            through = field.remote_field.through
+            if through is None:
+                continue
+            updatethroughquery = (
+                "SELECT setval(pg_get_serial_sequence('{table}', '{id}')"
+                ", (SELECT MAX({id}) FROM {table}));".format(
+                    table=through._meta.db_table, id=through._meta.pk.column
+                )
+            )
+            cursor.execute(updatethroughquery)
     return errors
 
 
