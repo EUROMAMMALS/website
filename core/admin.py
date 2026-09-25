@@ -11,13 +11,11 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
 from django.conf import settings
-from django.core.mail import send_mail
 from django.db.models import Q
 from django.contrib.admin import SimpleListFilter
 
 # Register your models here.
 from euromammals.functions_admin import CSVAdmin
-from euromammals.functions_admin import CsvImportForm
 from euromammals.functions_admin import csv_exists
 from euromammals.functions_admin import GeneralAdmin
 
@@ -132,6 +130,12 @@ class CustomUserAdmin(UserAdmin, GeneralAdmin):
 
     change_list_template = "admin/import_csv.html"
 
+    def save_form(self, request, form, change):
+        user = super().save_form(request, form, change)
+        if not change:
+            user._creation_password = form.cleaned_data["password1"]
+        return user
+
     def _add_urls(self):
         return []
 
@@ -159,7 +163,6 @@ class CustomUserAdmin(UserAdmin, GeneralAdmin):
                 is_superuser = False
             lines = csv_file.readlines()
             header = lines[0].decode().strip().split(separator)
-            emails = []
             errors = 0
             for line in lines[1:]:
                 vals = line.decode().strip().split(separator)
@@ -168,63 +171,39 @@ class CustomUserAdmin(UserAdmin, GeneralAdmin):
                 regroup = None
                 try:
                     regroup = ResearchGroup.objects.get(id=rg)
-                except:
+                except Exception:
                     try:
                         regroup = ResearchGroup.objects.get(name=rg)
-                    except:
+                    except Exception:
                         try:
                             regroup = ResearchGroup.objects.get(shortname=rg)
-                        except:
+                        except Exception:
                             self.message_user(
                                 request,
-                                f"Research group with value {rg} not found. User {username} not upload",
+                                f"Research group with value {rg} not found."
+                                f" User {username} not upload",
                                 level=messages.WARNING,
                             )
                             errors += 1
                             continue
-                user = usermodel.objects.create_user(
+                password = vals[header.index("password")]
+                user = usermodel(
                     email=vals[header.index("email")],
                     username=username,
-                    password=vals[header.index("password")],
                     is_staff=is_staff,
                     first_name=vals[header.index("first_name")],
                     last_name=vals[header.index("last_name")],
                     # bio = vals[header.index("bio")],
                     is_superuser=is_superuser,
                 )
+                user.set_password(password)
+                user._creation_password = password
+                user.save()
                 user.research_group.add(regroup)
                 for proj in Project.objects.exclude(name__in=["EXTERNAL"]):
                     if vals[header.index(proj.name.lower())] == "TRUE":
                         user.projects.add(proj)
                 user.save()
-                mail_text = f"Dear {user.first_name} {user.last_name},\na new account on EUROMAMMALS website was created for you.\n"
-                mail_text += f"Your username is {user.username} and password {vals[header.index('password')]}.\n"
-                mail_text += (
-                    f"You can login here https://euromammals.org/accounts/login/ \n"
-                )
-                mail_text += f"Please change password as soon as possible at this link https://euromammals.org/accounts/password_change/ \n"
-                mail_text += "Kind regards"
-                try:
-                    sentmail = send_mail(
-                        "Registration to EUROMAMMALS website",
-                        mail_text,
-                        None,
-                        [user.email],
-                    )
-                except Exception as err:
-                    self.message_user(
-                        request,
-                        f"Not able to send email to {user.username}: {err}",
-                        level=messages.WARNING,
-                    )
-                    errors += 1
-                if sentmail == 0:
-                    self.message_user(
-                        request,
-                        f"Not able to send email to {user.username}",
-                        level=messages.WARNING,
-                    )
-                    errors += 1
             if errors == 0:
                 self.message_user(request, "Your csv file has been imported correctly")
             else:
@@ -271,8 +250,22 @@ class CustomUserAdmin(UserAdmin, GeneralAdmin):
         return queryset, use_distinct
 
 
+class ResearchGroupProjectInline(admin.TabularInline):
+    model = ResearchGroupProject
+    extra = 1
+    fields = (
+        "project",
+        "year",
+        "contact_people",
+        "contact_user",
+        "term_of_use",
+    )
+
+
 class ResearchGroupAdmin(CSVAdmin):
     search_fields = ("name", "organization__name")
+    exclude = ("projects",)
+    inlines = [ResearchGroupProjectInline]
 
 
 class ResearchGroupProjectAdmin(CSVAdmin):
