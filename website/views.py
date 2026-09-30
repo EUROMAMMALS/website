@@ -108,10 +108,13 @@ def metadata(request, project):
 
 def publications(request):
     """Function to return the publications"""
-    internal = Publication.objects.all()
+    publis = Publication.objects.all()
     external = PublicationExternal.objects.all()
-    publis = list(chain(internal, external))
-    return render(request, template_name="pubs.html", context={"pubs": publis})
+    return render(
+        request,
+        template_name="pubs.html",
+        context={"pubs": publis, "exts": external},
+    )
 
 
 def educational(request):
