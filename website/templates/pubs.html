@@ -29,8 +29,8 @@
     <div class="card">
         <div class="card-heading">
             <h4 class="card-title">
-                <a class="btn" data-bs-toggle="collapse" href="#collapseMammals{{item.id}}" role="button" aria-expanded="false" aria-controls="collapseMammals{{ item.title }}">
-                    <span class="float-left">{{ item.project.all|join:'_' }}_{{ item.euro_id }} <b>{{ item.title }}</b></span>
+                <a class="btn" data-bs-toggle="collapse" href="#collapseExternal{{item.id}}" role="button" aria-expanded="false" aria-controls="collapseExternal{{ item.title }}">
+                    <span class="float-left">{{ item.project.all|join:'_' }} <b>{{ item.title }}</b></span>
                     <span class="float-right"><i class="fas fa-plus fa-3" id="faicon{{item.id}}"></i></span>
                 </a>
                 {% if request.user.is_staff %}
@@ -40,7 +40,7 @@
                 {% endif %}
             </h4>
         </div>
-        <div id="collapseMammals{{ item.id }}" class="collapse" data-id="{{ item.id }}">
+        <div id="collapseExternal{{ item.id }}" class="collapse" data-id="{{ item.id }}">
             <div class="card-body" id="mammals{{ item.id }}">
                 <p><b>{{ item.title }}</b> <i>{{ item.authors }}</i>; {{ item.journal }}, {{ item.year }}<br><a href="{{ item.doi }}" target="_blank">{{ item.doi }}</a></p>
             </div>
