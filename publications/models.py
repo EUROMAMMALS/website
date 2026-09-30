@@ -12,15 +12,17 @@ PUB_TYPES = (
     ("VI", _("Video")),
 )
 
+
 # Create your models here.
 class Journal(models.Model):
     """"""
+
     name = models.CharField(max_length=255, unique=True)
     url = models.URLField(null=True, blank=True)
 
     class Meta:
-        db_table = 'journal'
-        ordering = ['name']
+        db_table = "journal"
+        ordering = ["name"]
 
     def __unicode__(self):
         return smart_str(f"{self.name}")
@@ -34,6 +36,7 @@ class Journal(models.Model):
 
 class Publication(models.Model):
     """"""
+
     authors = models.TextField()
     title = models.TextField()
     abstract = models.TextField(null=True, blank=True)
@@ -46,8 +49,8 @@ class Publication(models.Model):
     euro_id = models.IntegerField()
 
     class Meta:
-        db_table = 'publication'
-        ordering = ['-year']
+        db_table = "publication"
+        ordering = ["-year"]
 
     def __unicode__(self):
         return smart_str(f"{self.title}")
@@ -58,8 +61,10 @@ class Publication(models.Model):
     def natural_key(self):
         return self.__unicode__()
 
+
 class PublicationExternal(models.Model):
     """"""
+
     authors = models.TextField()
     title = models.TextField()
     abstract = models.TextField(null=True, blank=True)
@@ -72,8 +77,8 @@ class PublicationExternal(models.Model):
     ttype = models.CharField(max_length=2, choices=PUB_TYPES)
 
     class Meta:
-        db_table = 'publication_external'
-        ordering = ['-year']
+        db_table = "publication_external"
+        ordering = ["-year"]
 
     def __unicode__(self):
         return smart_str(f"{self.title}")
