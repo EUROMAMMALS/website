@@ -7,7 +7,7 @@ from itertools import chain
 from django.shortcuts import render
 from django.conf import settings
 from django.core.mail import send_mail
-from django.db.models import Q
+from django.db.models import Min, Q
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
 from core.models import Project, ResearchGroupProject
@@ -108,8 +108,13 @@ def metadata(request, project):
 
 def publications(request):
     """Function to return the publications"""
-    publis = Publication.objects.all()
-    external = PublicationExternal.objects.all()
+    publis = (
+        Publication.objects.all()
+        .annotate(_project_order=Min("project__name"))
+        .order_by("_project_order", "-year", "euro_id")
+        .distinct()
+    )
+    external = PublicationExternal.objects.all().order_by("-year").distinct()
     return render(
         request,
         template_name="pubs.html",
