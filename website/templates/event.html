@@ -68,14 +68,14 @@
         <div class="row">
             {% if item.main_slide_link %}
             <div class="col-md-4 mx-auto text-center">
-                {% trans "If you look for the main slides" %}
+                {% trans "If you look for the EMT presentations" %}
                 <br>
                 <a href="{{ item.main_slide_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Download here" %}</a>
             </div>
             {% endif %}
             {% if item.folder_slides_link %}
             <div class="col-md-4 mx-auto text-center">
-                {% trans "If you look for all the other slides" %}
+                {% trans "If you look for the other presentations" %}
                 <br>
                 <a href="{{ item.folder_slides_link }}" target="_blank" class="btn btn-primary mt-3">{% trans "Download here" %}</a>
             </div>
