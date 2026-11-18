@@ -50,6 +50,7 @@ urlpatterns = [
     path("eurojackal/", wviews.project, {"projct": "EUROJACKAL"}),
     path("afrimove/", wviews.project, {"projct": "AfriMove"}),
     path("euroraccoon/", wviews.project, {"projct": "EURORACCOON"}),
+    path("euroleporid/", wviews.project, {"projct": "EUROLEPORID"}),
     path("i18n/", include("django.conf.urls.i18n")),
     path(
         "jsi18n/", JavaScriptCatalog.as_view(), js_info_dict, name="javascript_catalog"
