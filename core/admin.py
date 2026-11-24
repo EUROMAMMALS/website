@@ -24,6 +24,7 @@ from .models import Organization
 from .models import ResearchGroup
 from .models import User
 from .models import ResearchGroupProject
+from .models import StudyArea
 
 from .forms import CustomUserCreationForm
 from .forms import CustomUserChangeForm
@@ -289,3 +290,4 @@ admin.site.register(Project, CSVAdmin)
 admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(ResearchGroup, ResearchGroupAdmin)
 admin.site.register(ResearchGroupProject, ResearchGroupProjectAdmin)
+admin.site.register(StudyArea, GeneralAdmin)

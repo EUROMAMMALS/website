@@ -5,6 +5,7 @@ from django.forms import Form
 from django.forms import FileField
 from django.forms import CharField
 from django.contrib import admin
+from django.contrib.gis.admin import OSMGeoAdmin
 from django.urls import path
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -48,7 +49,7 @@ class FilterProjectAdmin(admin.ModelAdmin):
     list_filter = ["project"]
 
 
-class GeneralAdmin(admin.ModelAdmin):
+class GeneralAdmin(OSMGeoAdmin):
     # save_as = True
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
