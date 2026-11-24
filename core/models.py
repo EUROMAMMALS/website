@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 
+
 class Country(models.Model):
     """Class for country info"""
 
@@ -29,6 +30,7 @@ class Country(models.Model):
 
 class Project(models.Model):
     """"""
+
     name = models.CharField(max_length=100)
     start_year = models.IntegerField()
     pager_status = models.URLField(null=True, blank=True)
@@ -51,7 +53,8 @@ class Project(models.Model):
 
 
 class Organization(models.Model):
-    """This table is useful to save info about organizations """
+    """This table is useful to save info about organizations"""
+
     name = models.CharField(max_length=255)
     shortname = models.CharField(max_length=25)
     address = models.CharField(max_length=250, null=True, blank=True)
@@ -90,6 +93,7 @@ class Organization(models.Model):
 
 class ResearchGroup(models.Model):
     """"""
+
     name = models.CharField(max_length=255)
     shortname = models.CharField(max_length=25)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
@@ -132,10 +136,15 @@ class User(AbstractUser):
 
     bio = models.TextField(max_length=500, null=True, blank=True)
     image = models.ImageField(upload_to="users/", null=True, blank=True)
-    #TODO could a person be connected with more then one group?
+    # TODO could a person be connected with more then one group?
     research_group = models.ManyToManyField(ResearchGroup)
     projects = models.ManyToManyField(Project)
-    euromammals_username = models.TextField(max_length=500, null=True, blank=True, help_text="The username of the user in the Euromammals database")
+    euromammals_username = models.TextField(
+        max_length=500,
+        null=True,
+        blank=True,
+        help_text="The username of the user in the Euromammals database",
+    )
     note = models.TextField(max_length=500, null=True, blank=True)
 
     class Meta:
@@ -159,7 +168,9 @@ class User(AbstractUser):
 
     @admin.display(description="Research Groups")
     def research_group_list(self):
-        return ", ".join([research_group.name for research_group in self.research_group.all()])
+        return ", ".join(
+            [research_group.name for research_group in self.research_group.all()]
+        )
 
     @admin.display(description="Projects")
     def projects_list(self):
@@ -167,7 +178,12 @@ class User(AbstractUser):
 
     @admin.display(description="Organizations")
     def organizations_list(self):
-        return ", ".join([research_group.organization.name for research_group in self.research_group.all()])
+        return ", ".join(
+            [
+                research_group.organization.name
+                for research_group in self.research_group.all()
+            ]
+        )
 
 
 class ResearchGroupProject(models.Model):
@@ -194,3 +210,37 @@ class ResearchGroupProject(models.Model):
     @admin.display(description="Organization")
     def organization_name(self):
         return self.researchgroup.organization.name
+
+
+class StudyArea(models.Model):
+    """This table is useful to save info about study areas"""
+
+    study_area = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255)
+    shortname = models.CharField(max_length=25)
+    geom = models.MultiPolygonField(srid=4326)
+    geom_mcp_individuals = models.MultiPolygonField(srid=4326, null=True, blank=True)
+    geom_traj_buffer = models.MultiPolygonField(srid=4326, null=True, blank=True)
+    geom_vhf = models.MultiPolygonField(srid=4326, null=True, blank=True)
+    study_area_description = models.TextField(null=True, blank=True)
+    source_research_groups = models.IntegerField(null=True, blank=True)
+    research_groups = models.ManyToManyField(ResearchGroup, blank=True)
+    projects = models.ManyToManyField(Project, blank=True)
+    source_database = models.CharField(max_length=255, null=True, blank=True)
+    source_study_areas_id = models.IntegerField(null=True, blank=True)
+    source_insert_timestamp = models.DateTimeField(null=True, blank=True)
+    source_update_timestamp = models.DateTimeField(null=True, blank=True)
+    note = models.TextField(max_length=500, null=True, blank=True)
+
+    class Meta:
+        ordering = ["name"]
+        db_table = "study_area"
+
+    def __unicode__(self):
+        return smart_str(self.name)
+
+    def __str__(self):
+        return self.__unicode__()
+
+    def natural_key(self):
+        return self.__unicode__()
