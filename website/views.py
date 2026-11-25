@@ -101,7 +101,14 @@ def event(request, idd):
 
 def metadata(request, project):
     proj = f"{project.lower()}_db"
-    data = json.loads(metadata_per_group(proj))
+    metadata = metadata_per_group(proj)
+    if metadata is None:
+        return render(
+            request,
+            template_name="metadata.html",
+            context={"noitems": "No metadata available for this project."},
+        )
+    data = json.loads(metadata)
 
     return render(request, template_name="metadata.html", context={"items": data})
 

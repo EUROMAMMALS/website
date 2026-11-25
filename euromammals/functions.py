@@ -744,6 +744,9 @@ def metadata_per_group(
             NAME=common_name,
         )
     conn = _get_psycopg2_connection(dbname)
+    if not conn:
+        print(f"Error connecting to database {dbname}.")
+        return None
     with conn.cursor() as cursor:
         cursor.execute(QUERY)
         rows = cursor.fetchall()
